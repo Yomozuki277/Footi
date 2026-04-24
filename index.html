@@ -135,6 +135,14 @@
     .empty{padding:28px 18px;text-align:center;color:var(--muted);line-height:1.8;}
     .friend-note{margin-top:16px;padding:14px 16px;border-radius:18px;background:rgba(129,95,61,.10);color:#664c34;line-height:1.7;border:1px solid rgba(129,95,61,.14);}
     .subtle{font-size:14px;color:var(--muted);line-height:1.75;}
+    .promo-note{margin-top:16px;padding:14px 16px;border-radius:18px;background:rgba(23,22,20,.04);border:1px dashed var(--line-strong);color:#5f554b;font-size:14px;line-height:1.8;}
+    .history-list{display:grid;gap:10px;margin-top:12px;}
+    .history-item{display:flex;justify-content:space-between;gap:14px;align-items:center;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.72);border:1px solid var(--line);}
+    .history-item .left{min-width:0;}
+    .history-item .title{font-size:14px;font-weight:760;line-height:1.5;}
+    .history-item .meta{font-size:12px;color:var(--muted);margin-top:2px;}
+    .history-badge{padding:8px 10px;border-radius:999px;background:rgba(129,95,61,.12);border:1px solid rgba(129,95,61,.14);font-size:12px;color:#6a4d30;white-space:nowrap;}
+    .mini-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
     @media (max-width:420px){
       .question-text{font-size:23px;}
       .result-name,.compat-name{font-size:30px;}
@@ -190,6 +198,8 @@
   <div class="toast" id="toast"></div>
 
   <script>
+    const promoLine = "其实真的有这款游戏在今年某月发布，关注 xhs @教的主";
+
     const appData = {
       questions: [
         { id:1, weight:1.5, text:"准备出门，面前有四双符合你尺码的鞋，你会选择？", options:[
@@ -322,13 +332,46 @@
     const toast = document.getElementById('toast');
 
     const validCodes = new Set(Object.keys(appData.results));
+    const pairKeys = {
+      INFJ:"c7m2", ENFJ:"l4r8", ENFP:"w2n6", INFP:"h8q3",
+      INTJ:"z5k1", ENTJ:"p9d4", ENTP:"b6t7", INTP:"x3f2",
+      ISTJ:"s1v8", ESTJ:"j7c5", ISFJ:"m4y9", ESFJ:"u2a6",
+      ISTP:"r8e3", ESTP:"n5g1", ISFP:"q6p4", ESFP:"t3h7"
+    };
+    const pairKeyToCode = Object.fromEntries(Object.entries(pairKeys).map(([code,key]) => [key, code]));
     const url = new URL(window.location.href);
-    const pairCode = validCodes.has(url.searchParams.get('pair')) ? url.searchParams.get('pair') : null;
+    const pairToken = url.searchParams.get('pair');
+    const pairCode = pairKeyToCode[pairToken] || null;
+
 
     let currentIndex = 0;
     let answers = Array(appData.questions.length).fill(null);
     let latestResultCode = localStorage.getItem('footi_latest_result') || null;
     let currentView = 'test';
+    let autoNextTimer = null;
+    const pairHistoryKey = 'footi_pair_history';
+
+    function getPairHistory(){
+      try { return JSON.parse(localStorage.getItem(pairHistoryKey) || '[]'); } catch { return []; }
+    }
+    function savePairHistory(items){ localStorage.setItem(pairHistoryKey, JSON.stringify(items.slice(0,12))); }
+    function addPairHistory(selfCode, friendCode, levelKey){
+      if (!selfCode || !friendCode || selfCode === friendCode) return;
+      const key = [selfCode, friendCode].sort().join('-');
+      const history = getPairHistory();
+      const filtered = history.filter(item => item.key !== key);
+      filtered.unshift({ key, selfCode, friendCode, levelKey, time: Date.now() });
+      savePairHistory(filtered);
+    }
+    function formatTime(ts){
+      const d = new Date(ts);
+      const mm = String(d.getMonth()+1).padStart(2,'0');
+      const dd = String(d.getDate()).padStart(2,'0');
+      const hh = String(d.getHours()).padStart(2,'0');
+      const mi = String(d.getMinutes()).padStart(2,'0');
+      return `${mm}.${dd} ${hh}:${mi}`;
+    }
+
 
     function showToast(text){
       toast.textContent = text;
@@ -363,8 +406,24 @@
         btn.className = 'option' + (answers[currentIndex] === idx ? ' active' : '');
         btn.innerHTML = `<div class="option-key">${option.label}</div><div class="option-text">${option.text}</div>`;
         btn.addEventListener('click', () => {
+          clearTimeout(autoNextTimer);
           answers[currentIndex] = idx;
           renderQuestion();
+          autoNextTimer = setTimeout(() => {
+            if (currentIndex < appData.questions.length - 1){
+              currentIndex += 1;
+              renderQuestion();
+            } else {
+              const result = computeResult();
+              latestResultCode = result.code;
+              localStorage.setItem('footi_latest_result', latestResultCode);
+              if (pairCode && pairCode !== latestResultCode){
+                setView('compat');
+              } else {
+                setView('result');
+              }
+            }
+          }, 220);
         });
         optionsEl.appendChild(btn);
       });
@@ -374,12 +433,14 @@
     }
 
     prevBtn.addEventListener('click', () => {
+      clearTimeout(autoNextTimer);
       if (currentIndex > 0){
         currentIndex -= 1;
         renderQuestion();
       }
     });
     nextBtn.addEventListener('click', () => {
+      clearTimeout(autoNextTimer);
       if (answers[currentIndex] === null) return;
       if (currentIndex < appData.questions.length - 1){
         currentIndex += 1;
@@ -436,8 +497,110 @@
     function buildPairLink(code){
       const u = new URL(window.location.href);
       u.search = '';
-      u.searchParams.set('pair', code);
+      u.searchParams.set('pair', pairKeys[code]);
       return u.toString();
+    }
+
+    function getResultUrl(code){
+      const u = new URL(window.location.href);
+      u.search = '';
+      return u.toString();
+    }
+
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines=4){
+      const chars = Array.from(text);
+      let line = '';
+      let lines = [];
+      for (const ch of chars){
+        const test = line + ch;
+        if (ctx.measureText(test).width > maxWidth && line){
+          lines.push(line);
+          line = ch;
+          if (lines.length >= maxLines-1) break;
+        } else line = test;
+      }
+      if (line && lines.length < maxLines) lines.push(line);
+      if (lines.length === maxLines && chars.join('').length > lines.join('').length){
+        let last = lines[maxLines-1];
+        while (ctx.measureText(last + '…').width > maxWidth && last) last = last.slice(0,-1);
+        lines[maxLines-1] = last + '…';
+      }
+      lines.forEach((ln,i)=>ctx.fillText(ln,x,y+i*lineHeight));
+      return y + (lines.length-1)*lineHeight;
+    }
+
+    function svgDataUrl(svg){
+      return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    }
+
+    function loadImage(src){
+      return new Promise((resolve, reject)=>{ const img=new Image(); img.onload=()=>resolve(img); img.onerror=reject; img.src=src; });
+    }
+
+    async function saveShareCard(kind){
+      const canvas = document.createElement('canvas');
+      canvas.width = 1200; canvas.height = 1600;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#f7f2e8'; ctx.fillRect(0,0,canvas.width,canvas.height);
+      const grad = ctx.createLinearGradient(0,0,0,1600);
+      grad.addColorStop(0,'rgba(255,255,255,0.95)'); grad.addColorStop(1,'rgba(239,231,218,0.95)');
+      ctx.fillStyle = grad; ctx.fillRect(0,0,canvas.width,1600);
+      ctx.fillStyle = 'rgba(129,95,61,0.08)'; ctx.beginPath(); ctx.arc(950,210,180,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(220,1320,220,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#171614';
+      ctx.font = '700 44px Inter, system-ui, sans-serif'; ctx.fillText('footi', 96, 120);
+      ctx.font = '500 24px Inter, system-ui, sans-serif'; ctx.fillStyle = '#7b7268'; ctx.fillText('测测你是哪种脚', 96, 164);
+      ctx.fillStyle = '#ffffff';
+      roundRect(ctx, 72, 220, 1056, 1200, 44, true, false);
+      ctx.strokeStyle = 'rgba(23,22,20,.08)'; ctx.lineWidth = 2; roundRect(ctx,72,220,1056,1200,44,false,true);
+      if (kind === 'result'){
+        const data = appData.results[latestResultCode];
+        const badgeSvg = renderBadge(latestResultCode);
+        const img = await loadImage(svgDataUrl(badgeSvg));
+        ctx.drawImage(img, 830, 300, 210, 210);
+        ctx.fillStyle = '#6a4d30'; ctx.font = '700 24px Inter, system-ui, sans-serif'; ctx.fillText(data.share, 120, 348);
+        ctx.fillStyle = '#171614'; ctx.font = '800 76px Inter, system-ui, sans-serif'; ctx.fillText(data.name, 120, 438);
+        ctx.font = '500 34px Inter, system-ui, sans-serif'; ctx.fillStyle = '#3e372f';
+        let y = wrapText(ctx, data.description, 120, 540, 780, 52, 5);
+        ctx.fillStyle = '#171614'; ctx.font = '700 28px Inter, system-ui, sans-serif'; ctx.fillText('关键词', 120, y + 120);
+        let tx = 120, ty = y + 160;
+        ctx.font = '600 24px Inter, system-ui, sans-serif';
+        data.keywords.forEach(word=>{ const w = ctx.measureText(word).width + 44; if (tx + w > 930){ tx = 120; ty += 64; } ctx.fillStyle = 'rgba(129,95,61,.12)'; roundRect(ctx, tx, ty-28, w, 46, 22, true, false); ctx.fillStyle = '#5a4937'; ctx.fillText(word, tx+22, ty); tx += w + 14; });
+        ctx.fillStyle = '#7b7268'; ctx.font = '500 24px Inter, system-ui, sans-serif'; ctx.fillText('长按保存这张图，发给朋友一起测脚。', 120, 1320);
+        ctx.fillStyle = '#5f554b'; ctx.font = '500 22px Inter, system-ui, sans-serif'; wrapText(ctx, promoLine, 120, 1372, 900, 34, 2);
+      } else {
+        const self = appData.results[latestResultCode];
+        const friend = appData.results[pairCode];
+        const levelKey = getCompatibilityLevel(latestResultCode, pairCode);
+        const level = appData.compatibility[levelKey];
+        const img1 = await loadImage(svgDataUrl(renderBadge(latestResultCode)));
+        const img2 = await loadImage(svgDataUrl(renderBadge(pairCode)));
+        ctx.drawImage(img1, 140, 310, 220, 220);
+        ctx.drawImage(img2, 840, 310, 220, 220);
+        ctx.fillStyle = '#7b7268'; ctx.font = '700 28px Inter, system-ui, sans-serif'; ctx.fillText(self.name, 152, 566);
+        ctx.fillText(friend.name, 852, 566);
+        ctx.fillStyle = '#6a4d30'; ctx.font = '700 24px Inter, system-ui, sans-serif'; ctx.fillText(level.tagline, 120, 700);
+        ctx.fillStyle = '#171614'; ctx.font = '800 72px Inter, system-ui, sans-serif'; ctx.fillText(level.name, 120, 790);
+        ctx.font = '500 34px Inter, system-ui, sans-serif'; ctx.fillStyle = '#3e372f';
+        let y = wrapText(ctx, level.description, 120, 890, 900, 52, 4);
+        ctx.fillStyle = '#7b7268'; ctx.font = '500 24px Inter, system-ui, sans-serif'; ctx.fillText('长按保存这张图，发给朋友记录这次配对。', 120, 1320);
+        ctx.fillStyle = '#5f554b'; ctx.font = '500 22px Inter, system-ui, sans-serif'; wrapText(ctx, promoLine, 120, 1372, 900, 34, 2);
+      }
+      ctx.fillStyle = '#171614'; ctx.font = '700 24px Inter, system-ui, sans-serif'; ctx.fillText('footi', 120, 1480);
+      ctx.fillStyle = '#7b7268'; ctx.font = '500 22px Inter, system-ui, sans-serif'; ctx.fillText(getResultUrl(latestResultCode).replace(/^https?:\/\//,''), 200, 1480);
+      const link = document.createElement('a');
+      link.href = canvas.toDataURL('image/png');
+      link.download = kind === 'result' ? 'footi-result.png' : 'footi-compatibility.png';
+      link.click();
+      showToast('分享图已保存');
+    }
+
+    function roundRect(ctx, x, y, w, h, r, fill, stroke){
+      ctx.beginPath();
+      ctx.moveTo(x+r, y); ctx.arcTo(x+w, y, x+w, y+h, r); ctx.arcTo(x+w, y+h, x, y+h, r); ctx.arcTo(x, y+h, x, y, r); ctx.arcTo(x, y, x+w, y, r);
+      ctx.closePath();
+      if (fill) ctx.fill();
+      if (stroke) ctx.stroke();
     }
 
     async function copyText(text){
@@ -456,7 +619,7 @@
       if (!data) return;
       const pairLink = buildPairLink(latestResultCode);
       viewEls.result.innerHTML = `
-        <div class="card result-card">
+        <div class="card result-card" id="resultCard">
           <div class="result-head">
             <div>
               <div class="pill">footi result</div>
@@ -474,9 +637,11 @@
             <div class="linkline" id="pairLinkText">${pairLink}</div>
             <div class="actions">
               <button class="btn accent" id="copyPairBtn">复制配对链接</button>
+              <button class="btn secondary" id="saveResultCardBtn">保存分享图</button>
               <button class="btn secondary" id="goCompatBtn">查看相性</button>
               <button class="btn secondary" id="restartBtn">重新测试</button>
             </div>
+            <div class="promo-note">${promoLine}</div>
           </div>
         </div>
       `;
@@ -484,6 +649,7 @@
         const ok = await copyText(pairLink);
         showToast(ok ? '链接已复制' : '复制失败');
       });
+      document.getElementById('saveResultCardBtn').addEventListener('click', () => saveShareCard('result'));
       document.getElementById('goCompatBtn').addEventListener('click', () => setView('compat'));
       document.getElementById('restartBtn').addEventListener('click', restartTest);
     }
@@ -509,6 +675,19 @@
       }
       const selfCode = latestResultCode;
       const self = appData.results[selfCode];
+      const history = getPairHistory();
+      const historyHtml = history.length ? `
+        <div class="section share-box">
+          <div class="section-title">历史配对</div>
+          <div class="history-list">
+            ${history.map(item => {
+              const a = appData.results[item.selfCode];
+              const b = appData.results[item.friendCode];
+              const lv = appData.compatibility[item.levelKey];
+              return `<div class="history-item"><div class="left"><div class="title">${a.name} × ${b.name}</div><div class="meta">${formatTime(item.time)}</div></div><div class="history-badge">${lv.name}</div></div>`;
+            }).join('')}
+          </div>
+        </div>` : '';
       if (!(pairCode && validCodes.has(pairCode))){
         const selfLink = buildPairLink(selfCode);
         viewEls.compat.innerHTML = `
@@ -530,15 +709,19 @@
               <div class="linkline">${selfLink}</div>
               <div class="actions">
                 <button class="btn accent" id="copySelfPairBtn">复制配对链接</button>
+                <button class="btn secondary" id="saveResultCardBtn">保存分享图</button>
                 <button class="btn secondary" id="backResultBtn">返回结果</button>
               </div>
+              <div class="promo-note">${promoLine}</div>
             </div>
+            ${historyHtml}
           </div>
         `;
         document.getElementById('copySelfPairBtn').addEventListener('click', async () => {
           const ok = await copyText(selfLink);
           showToast(ok ? '链接已复制' : '复制失败');
         });
+        document.getElementById('saveResultCardBtn').addEventListener('click', () => saveShareCard('result'));
         document.getElementById('backResultBtn').addEventListener('click', () => setView('result'));
         return;
       }
@@ -546,6 +729,19 @@
       const friend = appData.results[friendCode];
       const levelKey = getCompatibilityLevel(selfCode, friendCode);
       const level = appData.compatibility[levelKey];
+      addPairHistory(selfCode, friendCode, levelKey);
+      const mergedHistoryHtml = getPairHistory().length ? `
+        <div class="section share-box">
+          <div class="section-title">历史配对</div>
+          <div class="history-list">
+            ${getPairHistory().map(item => {
+              const a = appData.results[item.selfCode];
+              const b = appData.results[item.friendCode];
+              const lv = appData.compatibility[item.levelKey];
+              return `<div class="history-item"><div class="left"><div class="title">${a.name} × ${b.name}</div><div class="meta">${formatTime(item.time)}</div></div><div class="history-badge">${lv.name}</div></div>`;
+            }).join('')}
+          </div>
+        </div>` : '';
       viewEls.compat.innerHTML = `
         <div class="card compat-card">
           <div class="compat-head">
@@ -572,20 +768,25 @@
           <div class="friend-note">${self.name} 和 ${friend.name} 站在一起，会把一段普通的路走出自己的镜头感。你们的节奏会在相遇之后慢慢成形，越走越有样子。</div>
           <div class="actions">
             <button class="btn accent" id="shareSelfBtn">复制我的配对链接</button>
+            <button class="btn secondary" id="saveCompatCardBtn">保存分享图</button>
             <button class="btn secondary" id="backResultBtn">返回结果</button>
             <button class="btn secondary" id="restartFromCompatBtn">重新测试</button>
           </div>
+          <div class="promo-note">${promoLine}</div>
+          ${mergedHistoryHtml}
         </div>
       `;
       document.getElementById('shareSelfBtn').addEventListener('click', async () => {
         const ok = await copyText(buildPairLink(selfCode));
         showToast(ok ? '链接已复制' : '复制失败');
       });
+      document.getElementById('saveCompatCardBtn').addEventListener('click', () => saveShareCard('compat'));
       document.getElementById('backResultBtn').addEventListener('click', () => setView('result'));
       document.getElementById('restartFromCompatBtn').addEventListener('click', restartTest);
     }
 
     function restartTest(){
+      clearTimeout(autoNextTimer);
       answers = Array(appData.questions.length).fill(null);
       currentIndex = 0;
       setView('test');
