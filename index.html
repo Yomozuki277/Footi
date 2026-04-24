@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>footi</title>
+  <meta name="description" content="footi｜测测你是哪种脚" />
+  <style>
+    :root{
+      --bg:#f7f2e8;
+      --bg-soft:#efe7da;
+      --panel:rgba(255,255,255,.86);
+      --panel-strong:rgba(255,255,255,.96);
+      --text:#171614;
+      --muted:#7b7268;
+      --line:rgba(23,22,20,.10);
+      --line-strong:rgba(23,22,20,.18);
+      --accent:#815f3d;
+      --accent-soft:rgba(129,95,61,.12);
+      --shadow:0 18px 46px rgba(23,22,20,.08);
+      --radius-xl:28px;
+      --radius-lg:22px;
+      --radius-md:16px;
+      --safe-bottom:max(16px, env(safe-area-inset-bottom));
+      --transition:220ms ease;
+    }
+    *{box-sizing:border-box;}
+    html,body{margin:0;min-height:100%;}
+    body{
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 14% 12%, rgba(255,255,255,.92), transparent 22%),
+        radial-gradient(circle at 84% 18%, rgba(129,95,61,.08), transparent 17%),
+        radial-gradient(circle at 60% 90%, rgba(255,255,255,.68), transparent 23%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+    body::before{
+      content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
+      background-image:
+        linear-gradient(rgba(23,22,20,.028) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(23,22,20,.028) 1px, transparent 1px);
+      background-size:30px 30px;
+      mask-image:linear-gradient(180deg, rgba(0,0,0,.6), transparent 84%);
+      opacity:.34;
+    }
+    button{font:inherit;}
+    .app{width:min(100%, 560px);margin:0 auto;padding:16px 14px calc(110px + var(--safe-bottom));}
+    .topbar{
+      position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:12px;
+      padding:12px 2px 16px;background:linear-gradient(180deg, rgba(247,242,232,.95), rgba(247,242,232,.8), transparent);
+      backdrop-filter:blur(8px);
+    }
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.1em;text-transform:lowercase;}
+    .brand-mark{width:40px;height:40px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.82);display:grid;place-items:center;box-shadow:var(--shadow);}
+    .brand-mark svg{width:22px;height:22px;}
+    .tiny{font-size:12px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;}
+    .progress-chip{padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid var(--line);font-size:12px;color:var(--muted);box-shadow:var(--shadow);}
+    .view{display:none;animation:fade .24s ease;}
+    .view.active{display:block;}
+    @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .card{
+      border:1px solid var(--line);border-radius:var(--radius-xl);background:linear-gradient(180deg, var(--panel-strong), var(--panel));
+      box-shadow:var(--shadow);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    }
+    .question-card{padding:22px 18px 18px;overflow:hidden;position:relative;}
+    .question-card::after{
+      content:"";position:absolute;right:-18px;top:-22px;width:110px;height:110px;border-radius:999px;
+      background:radial-gradient(circle, rgba(129,95,61,.12), transparent 65%);
+    }
+    .hero-mark{width:72px;height:72px;border-radius:24px;border:1px solid var(--line);background:rgba(255,255,255,.72);display:grid;place-items:center;margin-bottom:16px;}
+    .hero-mark svg{width:40px;height:40px;}
+    h1,h2,h3,p{margin:0;}
+    .question-no{font-size:12px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px;}
+    .question-text{font-size:26px;line-height:1.28;font-weight:800;letter-spacing:-.04em;max-width:15em;}
+    .helper{margin-top:12px;color:var(--muted);font-size:14px;line-height:1.7;}
+    .progress-line{height:8px;border-radius:999px;background:rgba(23,22,20,.07);overflow:hidden;margin:18px 0 20px;}
+    .progress-fill{height:100%;width:0;background:linear-gradient(90deg, var(--accent), #ba9871);border-radius:inherit;transition:width .3s ease;}
+    .options{display:grid;gap:12px;}
+    .option{
+      width:100%;text-align:left;padding:16px 16px 16px 14px;border-radius:20px;border:1px solid var(--line);background:rgba(255,255,255,.76);
+      display:flex;align-items:flex-start;gap:14px;cursor:pointer;transition:transform var(--transition),border-color var(--transition),box-shadow var(--transition),background var(--transition);
+      min-height:68px;
+    }
+    .option:hover{transform:translateY(-1px);border-color:var(--line-strong);box-shadow:0 10px 24px rgba(23,22,20,.06);}
+    .option.active{background:var(--accent-soft);border-color:rgba(129,95,61,.32);}
+    .option-key{width:32px;height:32px;border-radius:999px;background:rgba(23,22,20,.06);display:grid;place-items:center;font-weight:800;font-size:13px;flex:0 0 auto;}
+    .option.active .option-key{background:rgba(129,95,61,.16);color:#60472f;}
+    .option-text{font-size:15px;line-height:1.65;}
+    .bottom-bar{
+      position:fixed;left:0;right:0;bottom:0;z-index:20;padding:12px 14px calc(12px + var(--safe-bottom));
+      background:linear-gradient(180deg, rgba(247,242,232,0), rgba(247,242,232,.92) 26%, rgba(247,242,232,.98));
+      backdrop-filter:blur(10px);
+    }
+    .bottom-wrap{width:min(100%, 560px);margin:0 auto;display:flex;gap:12px;}
+    .btn{
+      appearance:none;border:1px solid var(--line);border-radius:999px;padding:14px 18px;min-height:52px;cursor:pointer;
+      transition:transform var(--transition),border-color var(--transition),box-shadow var(--transition),background var(--transition),opacity var(--transition);
+    }
+    .btn:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(23,22,20,.06);border-color:var(--line-strong);}
+    .btn:disabled{opacity:.38;cursor:not-allowed;transform:none;box-shadow:none;}
+    .btn.secondary{background:rgba(255,255,255,.76);color:var(--text);flex:0 0 112px;}
+    .btn.primary{background:var(--text);color:#fbf8f3;border-color:rgba(23,22,20,.92);flex:1;}
+    .btn.accent{background:var(--accent);color:#fbf8f3;border-color:var(--accent);}
+    .result-card,.compat-card{padding:20px 18px;}
+    .result-head,.compat-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;}
+    .pill{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;background:rgba(129,95,61,.12);color:#6a4d30;font-size:12px;letter-spacing:.08em;text-transform:uppercase;border:1px solid rgba(129,95,61,.16);}
+    .result-name,.compat-name{font-size:34px;line-height:1;font-weight:850;letter-spacing:-.05em;margin-top:12px;}
+    .share-line{margin-top:10px;font-size:16px;color:#5f4a34;font-weight:700;}
+    .desc{margin-top:14px;font-size:15px;line-height:1.82;color:var(--text);}
+    .keywords{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;}
+    .tag{padding:8px 12px;border-radius:999px;background:rgba(23,22,20,.05);font-size:13px;color:#514a42;}
+    .emblem-wrap{
+      width:132px;height:132px;border-radius:34px;border:1px solid var(--line);background:rgba(255,255,255,.7);display:grid;place-items:center;flex:0 0 auto;overflow:hidden;
+      box-shadow:0 12px 24px rgba(23,22,20,.06);
+    }
+    .emblem-wrap svg{width:110px;height:110px;}
+    .section{margin-top:16px;}
+    .section-title{font-size:12px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px;}
+    .share-box,.friend-box{padding:16px;border-radius:20px;border:1px solid var(--line);background:rgba(255,255,255,.65);}
+    .linkline{word-break:break-all;font-size:13px;line-height:1.6;color:#62584f;padding:10px 12px;border-radius:14px;background:rgba(23,22,20,.04);margin-top:10px;}
+    .actions{display:grid;gap:12px;margin-top:16px;}
+    .toast{position:fixed;left:50%;bottom:calc(92px + var(--safe-bottom));transform:translateX(-50%);padding:12px 16px;border-radius:999px;background:rgba(23,22,20,.92);color:#fff;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s ease;z-index:40;}
+    .toast.show{opacity:1;}
+    .compat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;}
+    .pair-card{padding:14px 12px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.7);}
+    .pair-k{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+    .pair-v{font-size:16px;font-weight:760;line-height:1.45;}
+    .compat-emblems{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-top:18px;}
+    .compat-emblems .emblem-wrap{width:104px;height:104px;border-radius:28px;justify-self:center;}
+    .compat-emblems .emblem-wrap svg{width:84px;height:84px;}
+    .divider-dot{width:36px;height:36px;border-radius:999px;background:rgba(129,95,61,.12);display:grid;place-items:center;color:#7d5b39;font-weight:800;border:1px solid rgba(129,95,61,.16);}
+    .empty{padding:28px 18px;text-align:center;color:var(--muted);line-height:1.8;}
+    .friend-note{margin-top:16px;padding:14px 16px;border-radius:18px;background:rgba(129,95,61,.10);color:#664c34;line-height:1.7;border:1px solid rgba(129,95,61,.14);}
+    .subtle{font-size:14px;color:var(--muted);line-height:1.75;}
+    @media (max-width:420px){
+      .question-text{font-size:23px;}
+      .result-name,.compat-name{font-size:30px;}
+      .emblem-wrap{width:118px;height:118px;border-radius:28px;}
+      .emblem-wrap svg{width:98px;height:98px;}
+      .compat-emblems .emblem-wrap{width:92px;height:92px;}
+      .compat-emblems .emblem-wrap svg{width:74px;height:74px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-mark">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M31 15c4-1 7 1 8 5 1 4-1 7-4 8-3 1-7-1-8-5-1-4 1-7 4-8Z" stroke="currentColor" stroke-width="2.4"/>
+            <path d="M24 22c3-1 5 1 6 4 .8 2.8-.5 5.3-3 6-2.5.7-5.3-.7-6-3.5-.7-2.8.5-5.4 3-6.5Z" stroke="currentColor" stroke-width="2.4"/>
+            <path d="M38 22c3-1 5 1 6 4 .8 2.8-.5 5.3-3 6-2.5.7-5.3-.7-6-3.5-.7-2.8.5-5.4 3-6.5Z" stroke="currentColor" stroke-width="2.4"/>
+            <path d="M32 29c8 0 15 6 15 14 0 6-4 9-11 9H28c-7 0-11-3-11-9 0-8 7-14 15-14Z" stroke="currentColor" stroke-width="2.4"/>
+          </svg>
+        </div>
+        <div>
+          <div>footi</div>
+          <div class="tiny">测测你是哪种脚</div>
+        </div>
+      </div>
+      <div class="progress-chip" id="progressChip">01 / 12</div>
+    </div>
+
+    <section class="view active" id="testView">
+      <div class="card question-card">
+        <div class="hero-mark" id="questionMark"></div>
+        <div class="question-no" id="questionNo">question 01</div>
+        <h1 class="question-text" id="questionText"></h1>
+        <p class="helper">选一个最像你的反应。没有标准答案。</p>
+        <div class="progress-line"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="options" id="options"></div>
+      </div>
+    </section>
+
+    <section class="view" id="resultView"></section>
+    <section class="view" id="compatView"></section>
+  </div>
+
+  <div class="bottom-bar" id="bottomBar">
+    <div class="bottom-wrap">
+      <button class="btn secondary" id="prevBtn">上一题</button>
+      <button class="btn primary" id="nextBtn">下一题</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const appData = {
+      questions: [
+        { id:1, weight:1.5, text:"准备出门，面前有四双符合你尺码的鞋，你会选择？", options:[
+          {label:"A", text:"闻起来最香的（是的你闻了一遍）", primary:"Se", secondary:null},
+          {label:"B", text:"外观最符合你审美的", primary:"Fi", secondary:null},
+          {label:"C", text:"会说话的鞋，大喊不要穿它", primary:"Ne", secondary:null},
+          {label:"D", text:"会说话的鞋，大喊快来穿它", primary:"Ni", secondary:null},
+          {label:"E", text:"不换，就要脚上的拖鞋", primary:"Si", secondary:null}
+        ]},
+        { id:2, weight:1.0, text:"你在门口看到一个清洁工，他问你有没有需要带走的垃圾，你选择？", options:[
+          {label:"A", text:"回去把垃圾袋拿给他", primary:"Si", secondary:"Te"},
+          {label:"B", text:"把最臭的鞋给他", primary:"Se", secondary:null},
+          {label:"C", text:"自己躺进清洁车里", primary:"Ne", secondary:null},
+          {label:"D", text:"别碍事", primary:"Te", secondary:null}
+        ]},
+        { id:3, weight:0.5, text:"打发走清洁工之后，你来到家门口的走廊，但是感觉和平常不一样？", options:[
+          {label:"A", text:"发现走廊的门都贴着一样的对联", primary:"Si", secondary:null},
+          {label:"B", text:"感觉地板上有很多脚要冲出来踹你", primary:"Se", secondary:"Ni"},
+          {label:"C", text:"觉得走廊没有尽头", primary:"Ni", secondary:null},
+          {label:"D", text:"不管是什么异常，先回家", primary:"Te", secondary:"Si"}
+        ]},
+        { id:4, weight:1.0, text:"街上的人都在往一个方向单脚跳跃，你会？", options:[
+          {label:"A", text:"一键跟随，跳跃不是罪过", primary:"Se", secondary:null},
+          {label:"B", text:"这群人是丧尸吧，迅速远离", primary:"Te", secondary:"Se"},
+          {label:"C", text:"我在做梦，寻找异次元入口", primary:"Ni", secondary:null},
+          {label:"D", text:"这些都是我的教徒，来跟随我的", primary:"Fe", secondary:"Ni"}
+        ]},
+        { id:5, weight:1.5, text:"你有点累，原地躺下，地面长出一只脚踹你？", options:[
+          {label:"A", text:"来者不善，左右闪避，必要时一脚踹回去", primary:"Se", secondary:null},
+          {label:"B", text:"哦吼帮我按摩一下那边对对对", primary:"Fi", secondary:"Se"},
+          {label:"C", text:"强迫症犯了，给他修剪指甲", primary:"Ti", secondary:null},
+          {label:"D", text:"把自己精挑细选的鞋子给他穿", primary:"Fe", secondary:null}
+        ]},
+        { id:6, weight:1.5, text:"有人光着脚说你偷了她的鞋子，你会？", options:[
+          {label:"A", text:"无端的指责，让她拿出证据", primary:"Ti", secondary:null},
+          {label:"B", text:"诉说自己的脚多么适合这双鞋", primary:"Fi", secondary:null},
+          {label:"C", text:"说自己有脚气", primary:"Se", secondary:null},
+          {label:"D", text:"看她可怜说自己有三双不穿的鞋可以送她一双", primary:"Fe", secondary:null}
+        ]},
+        { id:7, weight:1.0, text:"迎面走来了三个人，他们说这是一个副本世界，你会？", options:[
+          {label:"A", text:"我竟然是副本npc，令人悲伤", primary:"Fi", secondary:"Ni"},
+          {label:"B", text:"我也是玩家，带我一个", primary:"Fe", secondary:"Ne"},
+          {label:"C", text:"联系精神病院吴主任", primary:"Te", secondary:null},
+          {label:"D", text:"说他们有三双鞋子丢在自己家里了", primary:"Ne", secondary:null}
+        ]},
+        { id:8, weight:1.5, text:"你来到大巴站，你更期待？", options:[
+          {label:"A", text:"坐上夜宵专线，享受夜晚。", primary:"Se", secondary:null},
+          {label:"B", text:"离开副本世界的通道，我要去真实世界看看", primary:"Ni", secondary:null},
+          {label:"C", text:"和偶遇的乘客聊天，结交朋友", primary:"Fe", secondary:null},
+          {label:"D", text:"晕车，选择相信脚的力量！", primary:"Si", secondary:null}
+        ]},
+        { id:9, weight:1.5, text:"车站广播突然说你十分钟后会死，然后开始播放你最喜欢的音乐，你会？", options:[
+          {label:"A", text:"广播说的未必是真的，谁在操控广播？", primary:"Ti", secondary:null},
+          {label:"B", text:"先远离周围可能的危险来源，伺机而动", primary:"Te", secondary:"Se"},
+          {label:"C", text:"坐着十分钟，听听自己最喜欢的歌是什么", primary:"Fi", secondary:null},
+          {label:"D", text:"好好听，哼唱起来，踮脚挥手，献给世界最后一舞", primary:"Se", secondary:null}
+        ]},
+        { id:10, weight:1.5, text:"回到最初的房间，你发现自己真的不是房间的主人，还偷穿了别人的鞋，你会？", options:[
+          {label:"A", text:"找到房间的主人", primary:"Fe", secondary:"Te"},
+          {label:"B", text:"心安理得住下", primary:"Se", secondary:null},
+          {label:"C", text:"写成日记警告后来人", primary:"Si", secondary:"Ni"},
+          {label:"D", text:"我是怎么发现的？", primary:"Ti", secondary:null}
+        ]},
+        { id:11, weight:1.5, text:"你在房间发现了一本日记，上面写了你旅途发生的事情，你看到了自己开始看日记本这段剧情。", options:[
+          {label:"A", text:"无所谓，接着看后续发生了什么", primary:"Ni", secondary:null},
+          {label:"B", text:"莫名恐慌，不想从日记本中看到自己的未来。", primary:"Fi", secondary:null},
+          {label:"C", text:"谁写的日记？我可从不写日记。", primary:"Ti", secondary:"Si"},
+          {label:"D", text:"拿起笔往下编写剧情。", primary:"Ne", secondary:null}
+        ]},
+        { id:12, weight:0.5, text:"你彻底醒了，意识到自己刚才在玩一款叫“水脚的大巴”的游戏，如果可以你还希望体验什么内容？", options:[
+          {label:"A", text:"我还没把那三个自称玩家的角色变成自己的教徒", primary:"Fe", secondary:"Ni"},
+          {label:"B", text:"大巴的不同路线我想一一体验一遍", primary:"Ne", secondary:"Se"},
+          {label:"C", text:"始终没找到初始房间的主人，那四双鞋子还在等待属于它们的脚", primary:"Ni", secondary:"Si"},
+          {label:"D", text:"我要把日记本带出来", primary:"Si", secondary:"Ti"}
+        ]}
+      ],
+      results: {
+        INFJ:{name:"禅者行脚",share:"跳跃不是罪过",description:"这只脚走路没声音的，阿弥陀佛么么哒。",keywords:["静音落地","心流","暗线","轻轻走"]},
+        ENFJ:{name:"猪脚",share:"天生C位，步步生莲",description:"不是猪的脚，是主角的脚。登记的时候工作人员打错字了，但不影响你的主角气质。从小到大，脚心向背尽在你的掌握之中。",keywords:["主角感","发光体","带气氛","聚光灯"]},
+        ENFP:{name:"水脚",share:"并非汗脚",description:"奶奶说这孩子将来会是有脚气的，你不信。你只是喜欢蹦蹦跳跳阳光在闪耀罢了。",keywords:["水波纹","阳光感","爱跳","小神经"]},
+        INFP:{name:"赤脚",share:"并非红色的脚",description:"鞋子都好恶心，如果可以的话你愿意天天裸奔",keywords:["自由派","轻触地面","真感觉","软心肠"]},
+        INTJ:{name:"安其拉脚",share:"黑魔法拥有者",description:"吊车尾的家伙们，羞羞羞",keywords:["法阵","控场","魔压","高冷脚本"]},
+        ENTJ:{name:"脚之主",share:"天生的主人",description:"你是脚的主人，鞋子的主人，地板的主人，路人的主人。",keywords:["王者脚跟","统治力","掌控台面","主场"]},
+        ENTP:{name:"豆脚",share:"有股魅劲",description:"平生最爱干的事是让豆包帮你注销其他人的脚",keywords:["豆里豆气","机灵","爱整活","怪点子"]},
+        INTP:{name:"冰脚",share:"一百床被子都捂不热",description:"你是冬天限定的一款冰系武器。",keywords:["冷白皮","低温区","脑内风暴","结霜"]},
+        ISTJ:{name:"伪脚",share:"一切看起来很正常",description:"脚掌左右对称，脚趾头长短一致。一只标准的脚。",keywords:["标准件","对称美学","整整齐齐","稳定版"]},
+        ESTJ:{name:"京的脚",share:"士兵脚丫",description:"AUV是地地道道的京之脚，穿上靴子去踢前面那个廊坊孩子的屁股。",keywords:["靴子落地","行军步","带队感","利索"]},
+        ISFJ:{name:"毛脚",share:"毛毛玩偶的脚",description:"好萌的毛毛脚，全世界人类都想被你踩。",keywords:["绒绒的","抱一抱","软萌发电","安心感"]},
+        ESFJ:{name:"真脚无香",share:"纯真的脚味",description:"你路过的地方，花儿都为你倾倒",keywords:["花香轨迹","会照顾人","热闹体质","甜味"]},
+        ISTP:{name:"防弹脚",share:"厚厚的老茧",description:"脚界风衣是用你的脚皮做的，特别厚实的说",keywords:["耐磨层","硬核感","厚实派","现场处理"]},
+        ESTP:{name:"竖中指的脚",share:"低素质人口",description:"中脚指长得最美萌必须时刻展示",keywords:["展示欲","顶上去","现场派","很有劲"]},
+        ISFP:{name:"无脚",share:"无脚鸟",description:"因为不怎么走路，脚退化了。",keywords:["轻飘飘","留白感","慢慢来","风里走"]},
+        ESFP:{name:"美香脚",share:"美美的，香香的。",description:"对你来说，脚也需要营业。",keywords:["营业中","出片体质","香香美美","闪一下"]}
+      },
+      dominantFunctions: {
+        INFJ:"Ni", ENFJ:"Fe", ENFP:"Ne", INFP:"Fi",
+        INTJ:"Ni", ENTJ:"Te", ENTP:"Ne", INTP:"Ti",
+        ISTJ:"Si", ESTJ:"Te", ISFJ:"Si", ESFJ:"Fe",
+        ISTP:"Ti", ESTP:"Se", ISFP:"Fi", ESFP:"Se"
+      },
+      temperamentGroups: {
+        NF:["INFJ","ENFJ","ENFP","INFP"],
+        NT:["INTJ","ENTJ","ENTP","INTP"],
+        SJ:["ISTJ","ESTJ","ISFJ","ESFJ"],
+        SP:["ISTP","ESTP","ISFP","ESFP"]
+      },
+      compatibility: {
+        S:{name:"左右脚",description:"一左一右，刚好成双。你们踩在一起时节奏完整，转弯也自然。",note:"你们很会同频发力，走路有一种天生合脚的完整感。",tagline:"你们天生适合成双出现。"},
+        A:{name:"模特脚",description:"站在一起就有画面，抬脚落脚都很会出片。相处的空气感轻盈顺滑。",note:"你们的组合有镜头感，也有配合度，随手就是一张关系海报。",tagline:"你们站在一起，自带走秀机位。"},
+        B:{name:"刚装上的义肢",description:"刚接上时需要一点时间找平衡，越走越顺，走着走着会长出自己的默契。",note:"你们在调整里培养节奏，在相处里长出适合彼此的步幅。",tagline:"你们在调整里长出默契。"},
+        D:{name:"事故脚",description:"火花浓度很高，剧情密度也很高。你们一靠近，现场就会变得很精彩。",note:"这组关系很会制造名场面，很会把日常过成值得回放的片段。",tagline:"你们负责把普通日常过成名场面。"}
+      }
+    };
+
+    const questionIcons = ["mist","bag","hall","jump","kick","shoe","players","bus","radio","room","diary","ending"];
+    const viewEls = {
+      test: document.getElementById('testView'),
+      result: document.getElementById('resultView'),
+      compat: document.getElementById('compatView')
+    };
+    const questionNoEl = document.getElementById('questionNo');
+    const questionTextEl = document.getElementById('questionText');
+    const optionsEl = document.getElementById('options');
+    const progressFill = document.getElementById('progressFill');
+    const progressChip = document.getElementById('progressChip');
+    const questionMark = document.getElementById('questionMark');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const bottomBar = document.getElementById('bottomBar');
+    const toast = document.getElementById('toast');
+
+    const validCodes = new Set(Object.keys(appData.results));
+    const url = new URL(window.location.href);
+    const pairCode = validCodes.has(url.searchParams.get('pair')) ? url.searchParams.get('pair') : null;
+
+    let currentIndex = 0;
+    let answers = Array(appData.questions.length).fill(null);
+    let latestResultCode = localStorage.getItem('footi_latest_result') || null;
+    let currentView = 'test';
+
+    function showToast(text){
+      toast.textContent = text;
+      toast.classList.add('show');
+      clearTimeout(showToast._timer);
+      showToast._timer = setTimeout(() => toast.classList.remove('show'), 1400);
+    }
+
+    function setView(name){
+      currentView = name;
+      Object.entries(viewEls).forEach(([key, el]) => el.classList.toggle('active', key === name));
+      bottomBar.style.display = name === 'test' ? '' : 'none';
+      if (name === 'result') renderResult();
+      if (name === 'compat') renderCompat();
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+
+    function countAnswered(){
+      return answers.filter(v => v !== null).length;
+    }
+
+    function renderQuestion(){
+      const q = appData.questions[currentIndex];
+      questionNoEl.textContent = `question ${String(currentIndex + 1).padStart(2, '0')}`;
+      questionTextEl.textContent = q.text;
+      progressFill.style.width = `${((currentIndex + 1) / appData.questions.length) * 100}%`;
+      progressChip.textContent = `${String(currentIndex + 1).padStart(2, '0')} / ${String(appData.questions.length).padStart(2, '0')}`;
+      questionMark.innerHTML = renderQuestionMark(questionIcons[currentIndex]);
+      optionsEl.innerHTML = '';
+      q.options.forEach((option, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'option' + (answers[currentIndex] === idx ? ' active' : '');
+        btn.innerHTML = `<div class="option-key">${option.label}</div><div class="option-text">${option.text}</div>`;
+        btn.addEventListener('click', () => {
+          answers[currentIndex] = idx;
+          renderQuestion();
+        });
+        optionsEl.appendChild(btn);
+      });
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.disabled = answers[currentIndex] === null;
+      nextBtn.textContent = currentIndex === appData.questions.length - 1 ? '查看结果' : '下一题';
+    }
+
+    prevBtn.addEventListener('click', () => {
+      if (currentIndex > 0){
+        currentIndex -= 1;
+        renderQuestion();
+      }
+    });
+    nextBtn.addEventListener('click', () => {
+      if (answers[currentIndex] === null) return;
+      if (currentIndex < appData.questions.length - 1){
+        currentIndex += 1;
+        renderQuestion();
+      } else {
+        const result = computeResult();
+        latestResultCode = result.code;
+        localStorage.setItem('footi_latest_result', latestResultCode);
+        if (pairCode && pairCode !== latestResultCode){
+          setView('compat');
+        } else {
+          setView('result');
+        }
+      }
+    });
+
+    function computeScores(){
+      const scores = {Se:0,Si:0,Ne:0,Ni:0,Te:0,Ti:0,Fe:0,Fi:0};
+      appData.questions.forEach((q, i) => {
+        const answerIndex = answers[i];
+        if (answerIndex === null) return;
+        const choice = q.options[answerIndex];
+        scores[choice.primary] += 2 * q.weight;
+        if (choice.secondary) scores[choice.secondary] += 1 * q.weight;
+      });
+      return scores;
+    }
+
+    function getTypeFromScores(scores){
+      const ext = scores.Se + scores.Ne + scores.Te + scores.Fe;
+      const intl = scores.Si + scores.Ni + scores.Ti + scores.Fi;
+      const EI = ext >= intl ? 'E' : 'I';
+      const S = scores.Se + scores.Si;
+      const N = scores.Ne + scores.Ni;
+      const SN = N >= S ? 'N' : 'S';
+      const T = scores.Te + scores.Ti;
+      const F = scores.Fe + scores.Fi;
+      const TF = T >= F ? 'T' : 'F';
+      let JP = 'J';
+      if (EI === 'E') {
+        JP = (scores.Te + scores.Fe) >= (scores.Se + scores.Ne) ? 'J' : 'P';
+      } else {
+        JP = (scores.Ti + scores.Fi) >= (scores.Si + scores.Ni) ? 'J' : 'P';
+      }
+      return EI + SN + TF + JP;
+    }
+
+    function computeResult(){
+      const scores = computeScores();
+      const code = getTypeFromScores(scores);
+      return { code, scores, result: appData.results[code] };
+    }
+
+    function buildPairLink(code){
+      const u = new URL(window.location.href);
+      u.search = '';
+      u.searchParams.set('pair', code);
+      return u.toString();
+    }
+
+    async function copyText(text){
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch (e) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text; document.body.appendChild(textarea); textarea.select();
+        const ok = document.execCommand('copy'); document.body.removeChild(textarea); return ok;
+      }
+    }
+
+    function renderResult(){
+      const data = appData.results[latestResultCode];
+      if (!data) return;
+      const pairLink = buildPairLink(latestResultCode);
+      viewEls.result.innerHTML = `
+        <div class="card result-card">
+          <div class="result-head">
+            <div>
+              <div class="pill">footi result</div>
+              <h2 class="result-name">${data.name}</h2>
+              <p class="share-line">${data.share}</p>
+            </div>
+            <div class="emblem-wrap">${renderBadge(latestResultCode)}</div>
+          </div>
+          <p class="desc">${data.description}</p>
+          <div class="keywords">${data.keywords.map(k => `<span class="tag">${k}</span>`).join('')}</div>
+
+          <div class="section share-box">
+            <div class="section-title">朋友配对链接</div>
+            <div class="subtle">把这条链接发给朋友。朋友打开后会先做测试，做完就会自动进入你们的相性页。</div>
+            <div class="linkline" id="pairLinkText">${pairLink}</div>
+            <div class="actions">
+              <button class="btn accent" id="copyPairBtn">复制配对链接</button>
+              <button class="btn secondary" id="goCompatBtn">查看相性</button>
+              <button class="btn secondary" id="restartBtn">重新测试</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.getElementById('copyPairBtn').addEventListener('click', async () => {
+        const ok = await copyText(pairLink);
+        showToast(ok ? '链接已复制' : '复制失败');
+      });
+      document.getElementById('goCompatBtn').addEventListener('click', () => setView('compat'));
+      document.getElementById('restartBtn').addEventListener('click', restartTest);
+    }
+
+    function getTemperament(type){
+      return Object.entries(appData.temperamentGroups).find(([, arr]) => arr.includes(type))?.[0] || null;
+    }
+    function shareAxis(a, b){
+      return a[0] === b[0] || a[1] === b[1] || a[2] === b[2] || a[3] === b[3];
+    }
+    function getCompatibilityLevel(a, b){
+      if (a === b) return 'S';
+      if (appData.dominantFunctions[a] === appData.dominantFunctions[b]) return 'S';
+      if (getTemperament(a) === getTemperament(b)) return 'A';
+      if (shareAxis(a, b)) return 'B';
+      return 'D';
+    }
+
+    function renderCompat(){
+      if (!latestResultCode || !appData.results[latestResultCode]){
+        viewEls.compat.innerHTML = `<div class="card compat-card"><div class="empty">先完成测试，这里就会出现你的朋友相性。</div></div>`;
+        return;
+      }
+      const selfCode = latestResultCode;
+      const self = appData.results[selfCode];
+      if (!(pairCode && validCodes.has(pairCode))){
+        const selfLink = buildPairLink(selfCode);
+        viewEls.compat.innerHTML = `
+          <div class="card compat-card">
+            <div class="compat-head">
+              <div>
+                <div class="pill">footi compatibility</div>
+                <h2 class="compat-name">朋友相性</h2>
+                <p class="share-line">把你的链接发给朋友，等朋友做完测试，就会在同一条链接里长出你们的配对结果。</p>
+              </div>
+            </div>
+            <div class="compat-emblems">
+              <div class="emblem-wrap">${renderBadge(selfCode)}</div>
+              <div class="divider-dot">+</div>
+              <div class="emblem-wrap">${renderQuestionMark('players')}</div>
+            </div>
+            <div class="section share-box">
+              <div class="section-title">你的朋友配对链接</div>
+              <div class="linkline">${selfLink}</div>
+              <div class="actions">
+                <button class="btn accent" id="copySelfPairBtn">复制配对链接</button>
+                <button class="btn secondary" id="backResultBtn">返回结果</button>
+              </div>
+            </div>
+          </div>
+        `;
+        document.getElementById('copySelfPairBtn').addEventListener('click', async () => {
+          const ok = await copyText(selfLink);
+          showToast(ok ? '链接已复制' : '复制失败');
+        });
+        document.getElementById('backResultBtn').addEventListener('click', () => setView('result'));
+        return;
+      }
+      const friendCode = pairCode;
+      const friend = appData.results[friendCode];
+      const levelKey = getCompatibilityLevel(selfCode, friendCode);
+      const level = appData.compatibility[levelKey];
+      viewEls.compat.innerHTML = `
+        <div class="card compat-card">
+          <div class="compat-head">
+            <div>
+              <div class="pill">footi compatibility</div>
+              <h2 class="compat-name">${level.name}</h2>
+              <p class="share-line">${level.tagline}</p>
+            </div>
+          </div>
+          <div class="compat-emblems">
+            <div class="emblem-wrap">${renderBadge(selfCode)}</div>
+            <div class="divider-dot">×</div>
+            <div class="emblem-wrap">${renderBadge(friendCode)}</div>
+          </div>
+          <div class="compat-grid">
+            <div class="pair-card"><div class="pair-k">你的脚</div><div class="pair-v">${self.name}</div></div>
+            <div class="pair-card"><div class="pair-k">朋友的脚</div><div class="pair-v">${friend.name}</div></div>
+          </div>
+          <div class="section friend-box">
+            <div class="section-title">相性描述</div>
+            <p class="desc" style="margin-top:0;">${level.description}</p>
+            <p class="desc" style="margin-top:10px;">${level.note}</p>
+          </div>
+          <div class="friend-note">${self.name} 和 ${friend.name} 站在一起，会把一段普通的路走出自己的镜头感。你们的节奏会在相遇之后慢慢成形，越走越有样子。</div>
+          <div class="actions">
+            <button class="btn accent" id="shareSelfBtn">复制我的配对链接</button>
+            <button class="btn secondary" id="backResultBtn">返回结果</button>
+            <button class="btn secondary" id="restartFromCompatBtn">重新测试</button>
+          </div>
+        </div>
+      `;
+      document.getElementById('shareSelfBtn').addEventListener('click', async () => {
+        const ok = await copyText(buildPairLink(selfCode));
+        showToast(ok ? '链接已复制' : '复制失败');
+      });
+      document.getElementById('backResultBtn').addEventListener('click', () => setView('result'));
+      document.getElementById('restartFromCompatBtn').addEventListener('click', restartTest);
+    }
+
+    function restartTest(){
+      answers = Array(appData.questions.length).fill(null);
+      currentIndex = 0;
+      setView('test');
+      renderQuestion();
+    }
+
+    function renderQuestionMark(kind){
+      const common = 'stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"';
+      const maps = {
+        mist:`<svg viewBox="0 0 64 64" fill="none"><path ${common} d="M18 18c0 5 4 9 9 9h19c5 0 8-3 8-8s-4-8-9-8H27c-5 0-9 3-9 7Z"/><path ${common} d="M14 38h36"/><path ${common} d="M20 46h24"/><path ${common} d="M26 54h12"/></svg>`,
+        bag:`<svg viewBox="0 0 64 64" fill="none"><path ${common} d="M24 18c0-5 3-8 8-8s8 3 8 8"/><path ${common} d="M18 22h28l-2 28H20l-2-28Z"/><path ${common} d="M25 31h14"/><circle cx="25" cy="31" r="1.7" fill="currentColor"/><circle cx="39" cy="31" r="1.7" fill="currentColor"/></svg>`,
+        hall:`<svg viewBox="0 0 64 64" fill="none"><path ${common} d="M16 52V14h32v38"/><path ${common} d="M24 52V22h16v30"/><path ${common} d="M16 18h32"/><path ${common} d="M24 26h16"/></svg>`,
+        jump:`<svg viewBox="0 0 64 64" fill="none"><circle cx="22" cy="18" r="5" ${common}/><path ${common} d="M20 27l8 8 8-4"/><path ${common} d="M28 35l-6 13"/><path ${common} d="M29 37l12 11"/><path ${common} d="M12 49h40"/></svg>`,
+        kick:`<svg viewBox="0 0 64 64" fill="none"><path ${common} d="M18 34c8-8 16-8 24 0"/><path ${common} d="M42 34l10 4-4 8-16-2"/><path ${common} d="M25 22c2-5 6-8 12-8"/><path ${common} d="M16 48h20"/></svg>`,
+        shoe:`<svg viewBox="0 0 64 64" fill="none"><path ${common} d="M12 40c10 0 13-10 14-16l10 6c3 2 8 3 12 3h4v11H12v-4Z"/><path ${common} d="M18 44h30"/></svg>`,
+        players:`<svg viewBox="0 0 64 64" fill="none"><circle cx="20" cy="20" r="5" ${common}/><circle cx="32" cy="16" r="5" ${common}/><circle cx="44" cy="20" r="5" ${common}/><path ${common} d="M14 46c2-7 5-11 10-11s8 4 10 11"/><path ${common} d="M24 46c2-7 5-11 8-11s6 4 8 11"/><path ${common} d="M34 46c2-7 5-11 10-11s8 4 10 11"/></svg>`,
+        bus:`<svg viewBox="0 0 64 64" fill="none"><rect x="12" y="16" width="40" height="28" rx="8" ${common}/><path ${common} d="M18 24h28"/><path ${common} d="M18 32h12"/><path ${common} d="M38 32h8"/><circle cx="22" cy="47" r="4" ${common}/><circle cx="42" cy="47" r="4" ${common}/></svg>`,
+        radio:`<svg viewBox="0 0 64 64" fill="none"><rect x="14" y="18" width="36" height="28" rx="8" ${common}/><path ${common} d="M20 30h10"/><circle cx="40" cy="32" r="5" ${common}/><path ${common} d="M18 14l10 4"/><path ${common} d="M24 50h16"/></svg>`,
+        room:`<svg viewBox="0 0 64 64" fill="none"><path ${common} d="M16 50V18l16-8 16 8v32"/><path ${common} d="M24 50V34h16v16"/><path ${common} d="M20 24h24"/></svg>`,
+        diary:`<svg viewBox="0 0 64 64" fill="none"><path ${common} d="M18 14h22c4 0 6 2 6 6v30H24c-4 0-6-2-6-6V14Z"/><path ${common} d="M24 18v32"/><path ${common} d="M30 24h10"/><path ${common} d="M30 32h10"/><path ${common} d="M30 40h8"/></svg>`,
+        ending:`<svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="18" ${common}/><path ${common} d="M32 18v28"/><path ${common} d="M18 32h28"/><path ${common} d="M23 23l18 18"/><path ${common} d="M41 23 23 41"/></svg>`
+      };
+      return maps[kind] || maps.mist;
+    }
+
+    function badgeFrame(inner){
+      return `<svg viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="10" y="10" width="120" height="120" rx="34" fill="rgba(255,255,255,.76)"/>
+        <circle cx="70" cy="70" r="44" fill="rgba(129,95,61,.08)"/>
+        ${inner}
+      </svg>`;
+    }
+
+    function renderBadge(code){
+      const s = 'stroke="#6d5337" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"';
+      const c = '#6d5337';
+      const badges = {
+        INFJ: badgeFrame(`<path ${s} d="M70 34c4 11 11 18 22 22-11 4-18 11-22 22-4-11-11-18-22-22 11-4 18-11 22-22Z"/><path ${s} d="M51 86c8-3 14-8 19-15 5 7 11 12 19 15"/><path ${s} d="M60 99h20"/>`),
+        ENFJ: badgeFrame(`<circle cx="70" cy="46" r="10" ${s}/><path ${s} d="M48 90c6-17 14-25 22-25s16 8 22 25"/><path ${s} d="M44 52c8 0 12-4 16-12 4 8 8 12 16 12 8 0 12-4 16-12"/>`),
+        ENFP: badgeFrame(`<path ${s} d="M44 86c8-18 18-24 26-24 12 0 15 18 26 18"/><path ${s} d="M44 62c8-18 18-24 26-24 12 0 15 18 26 18"/><circle cx="51" cy="45" r="4" fill="${c}"/><circle cx="90" cy="92" r="4" fill="${c}"/>`),
+        INFP: badgeFrame(`<path ${s} d="M54 44c4 10 2 18-6 24 13 2 22 10 26 24 4-14 13-22 26-24-8-6-10-14-6-24"/><path ${s} d="M70 44v48"/>`),
+        INTJ: badgeFrame(`<path ${s} d="M70 34 96 52 86 96 54 96 44 52 70 34Z"/><path ${s} d="M58 62 70 46l12 16-12 18-12-18Z"/>`),
+        ENTJ: badgeFrame(`<path ${s} d="M46 92h48"/><path ${s} d="M52 78h36"/><path ${s} d="M58 64h24"/><path ${s} d="M64 50h12"/><path ${s} d="M70 38v12"/>`),
+        ENTP: badgeFrame(`<path ${s} d="M46 74c0-12 9-18 18-18s18 6 18 18-9 18-18 18-18-6-18-18Z"/><path ${s} d="M58 56c0-8 6-12 12-12s12 4 12 12"/><circle cx="58" cy="74" r="3" fill="${c}"/><circle cx="82" cy="74" r="3" fill="${c}"/>`),
+        INTP: badgeFrame(`<path ${s} d="M70 34v16"/><path ${s} d="M70 90v16"/><path ${s} d="M34 70h16"/><path ${s} d="M90 70h16"/><path ${s} d="M46 46l11 11"/><path ${s} d="M83 83 94 94"/><path ${s} d="M94 46 83 57"/><path ${s} d="M46 94 57 83"/><circle cx="70" cy="70" r="12" ${s}/>`),
+        ISTJ: badgeFrame(`<rect x="44" y="44" width="52" height="52" rx="14" ${s}/><path ${s} d="M70 44v52"/><path ${s} d="M44 70h52"/><circle cx="57" cy="57" r="2.5" fill="${c}"/><circle cx="83" cy="57" r="2.5" fill="${c}"/><circle cx="57" cy="83" r="2.5" fill="${c}"/><circle cx="83" cy="83" r="2.5" fill="${c}"/>`),
+        ESTJ: badgeFrame(`<path ${s} d="M48 42h44v18H48z"/><path ${s} d="M54 60h32v18H54z"/><path ${s} d="M60 78h20v18H60z"/><path ${s} d="M48 42 40 50"/><path ${s} d="M92 42 100 50"/>`),
+        ISFJ: badgeFrame(`<circle cx="55" cy="55" r="12" ${s}/><circle cx="85" cy="55" r="12" ${s}/><circle cx="55" cy="85" r="12" ${s}/><circle cx="85" cy="85" r="12" ${s}/><circle cx="70" cy="70" r="10" fill="rgba(129,95,61,.16)"/>`),
+        ESFJ: badgeFrame(`<circle cx="70" cy="70" r="10" ${s}/><path ${s} d="M70 38c4 12 10 18 22 22-12 4-18 10-22 22-4-12-10-18-22-22 12-4 18-10 22-22Z"/><circle cx="70" cy="70" r="4" fill="${c}"/>`),
+        ISTP: badgeFrame(`<path ${s} d="M70 34 92 44v20c0 16-10 26-22 34-12-8-22-18-22-34V44l22-10Z"/><path ${s} d="M59 68h22"/><path ${s} d="M63 56h14"/>`),
+        ESTP: badgeFrame(`<path ${s} d="M46 92c0-18 10-30 24-30 14 0 24 12 24 30"/><path ${s} d="M50 90h44"/><path ${s} d="M70 34v26"/><path ${s} d="M60 54h20"/><circle cx="70" cy="46" r="4" fill="${c}"/>`),
+        ISFP: badgeFrame(`<path ${s} d="M42 84c14-2 22-10 28-26 4 10 10 16 18 20"/><path ${s} d="M50 96c12-2 20-8 26-18"/><circle cx="90" cy="54" r="4" fill="${c}"/><circle cx="98" cy="46" r="3" fill="${c}"/>`),
+        ESFP: badgeFrame(`<path ${s} d="M70 36 76 52 94 52 80 62 86 80 70 70 54 80 60 62 46 52 64 52 70 36Z"/><circle cx="94" cy="42" r="4" fill="${c}"/><circle cx="48" cy="90" r="3.5" fill="${c}"/>`)
+      };
+      return badges[code] || badges.INFJ;
+    }
+
+    renderQuestion();
+  </script>
+</body>
+</html>
