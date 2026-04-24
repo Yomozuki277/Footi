@@ -143,15 +143,27 @@
     .history-item .meta{font-size:12px;color:var(--muted);margin-top:2px;}
     .history-badge{padding:8px 10px;border-radius:999px;background:rgba(129,95,61,.12);border:1px solid rgba(129,95,61,.14);font-size:12px;color:#6a4d30;white-space:nowrap;}
     .mini-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
-    .qr-wrap{display:grid;grid-template-columns:132px 1fr;gap:14px;align-items:center;margin-top:14px;}
-    .qr-card{width:132px;height:132px;border-radius:22px;background:#fff;border:1px solid var(--line);display:grid;place-items:center;box-shadow:0 8px 18px rgba(23,22,20,.05);overflow:hidden;}
-    .qr-card canvas,.qr-card img{width:112px;height:112px;display:block;}
-    .qr-fallback{width:96px;height:96px;border-radius:16px;background:linear-gradient(135deg, rgba(129,95,61,.12), rgba(23,22,20,.04));display:grid;place-items:center;color:#6a4d30;font-size:12px;letter-spacing:.08em;text-transform:uppercase;}
-    .qr-note{font-size:14px;color:var(--muted);line-height:1.75;}
+
+    .spoiler-box{margin-top:16px;padding:16px;border-radius:22px;border:1px solid rgba(129,95,61,.18);background:linear-gradient(180deg, rgba(129,95,61,.10), rgba(255,255,255,.72));}
+    .spoiler-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;}
+    .spoiler-title{font-size:12px;color:#7b6a57;letter-spacing:.14em;text-transform:uppercase;}
+    .spoiler-pill{padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(129,95,61,.12);font-size:12px;color:#6a4d30;}
+    .spoiler-copy{font-size:15px;line-height:1.8;color:#4a3b2d;}
+    .spoiler-mini{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
+    .spoiler-mini-card{padding:12px 12px 14px;border-radius:18px;background:rgba(255,255,255,.74);border:1px solid var(--line);}
+    .spoiler-mini-label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+    .spoiler-mini-text{font-size:13px;line-height:1.65;color:#5c5147;}
+    .compat-stage{margin-top:16px;padding:16px;border-radius:24px;background:linear-gradient(180deg, rgba(255,255,255,.82), rgba(129,95,61,.08));border:1px solid rgba(129,95,61,.14);}
+    .compat-stage-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;}
+    .compat-ribbon{padding:8px 12px;border-radius:999px;background:rgba(129,95,61,.14);color:#6a4d30;font-size:12px;letter-spacing:.12em;text-transform:uppercase;border:1px solid rgba(129,95,61,.14);}
+    .compat-story{margin-top:14px;padding:16px;border-radius:20px;background:rgba(255,255,255,.76);border:1px solid var(--line);}
+    .compat-story p{font-size:15px;line-height:1.8;color:#4d4338;}
+    .compat-preview{display:grid;gap:12px;margin-top:16px;}
+    .compat-preview-row{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;}
+    .spark{width:42px;height:42px;border-radius:999px;display:grid;place-items:center;background:rgba(129,95,61,.14);border:1px solid rgba(129,95,61,.14);color:#6a4d30;font-weight:800;}
+    .compat-link-box{margin-top:16px;padding:16px;border-radius:22px;background:rgba(255,255,255,.74);border:1px solid var(--line);}
+
     @media (max-width:420px){
-      .qr-wrap{grid-template-columns:116px 1fr;gap:12px;}
-      .qr-card{width:116px;height:116px;border-radius:20px;}
-      .qr-card canvas,.qr-card img{width:98px;height:98px;}
       .question-text{font-size:23px;}
       .result-name,.compat-name{font-size:30px;}
       .emblem-wrap{width:118px;height:118px;border-radius:28px;}
@@ -205,7 +217,6 @@
 
   <div class="toast" id="toast"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
   <script>
     const promoLine = "其实真的有这款游戏在今年某月发布，关注 xhs @教的主";
 
@@ -546,115 +557,6 @@
       return new Promise((resolve, reject)=>{ const img=new Image(); img.onload=()=>resolve(img); img.onerror=reject; img.src=src; });
     }
 
-    async function makeQrDataUrl(text, size = 220){
-      if (!(window.QRCode && window.QRCode.toDataURL)) return null;
-      try {
-        return await window.QRCode.toDataURL(text, {
-          width: size,
-          margin: 1,
-          color: { dark: '#6d5337', light: '#ffffff' }
-        });
-      } catch (e) {
-        return null;
-      }
-    }
-
-    async function renderQrInto(el, text, size = 112){
-      if (!el) return;
-      if (!(window.QRCode && window.QRCode.toCanvas)) {
-        el.innerHTML = '<div class="qr-fallback">footi</div>';
-        return;
-      }
-      const canvas = document.createElement('canvas');
-      try {
-        await window.QRCode.toCanvas(canvas, text, {
-          width: size,
-          margin: 1,
-          color: { dark: '#6d5337', light: '#ffffff' }
-        });
-        el.innerHTML = '';
-        el.appendChild(canvas);
-      } catch (e) {
-        el.innerHTML = '<div class="qr-fallback">footi</div>';
-      }
-    }
-
-    async function saveShareCard(kind){
-      const canvas = document.createElement('canvas');
-      canvas.width = 1200; canvas.height = 1600;
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#f7f2e8'; ctx.fillRect(0,0,canvas.width,canvas.height);
-      const grad = ctx.createLinearGradient(0,0,0,1600);
-      grad.addColorStop(0,'rgba(255,255,255,0.95)'); grad.addColorStop(1,'rgba(239,231,218,0.95)');
-      ctx.fillStyle = grad; ctx.fillRect(0,0,canvas.width,1600);
-      ctx.fillStyle = 'rgba(129,95,61,0.08)'; ctx.beginPath(); ctx.arc(950,210,180,0,Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.arc(220,1320,220,0,Math.PI*2); ctx.fill();
-      ctx.fillStyle = '#171614';
-      ctx.font = '700 44px Inter, system-ui, sans-serif'; ctx.fillText('footi', 96, 120);
-      ctx.font = '500 24px Inter, system-ui, sans-serif'; ctx.fillStyle = '#7b7268'; ctx.fillText('测测你是哪种脚', 96, 164);
-      ctx.fillStyle = '#ffffff';
-      roundRect(ctx, 72, 220, 1056, 1200, 44, true, false);
-      ctx.strokeStyle = 'rgba(23,22,20,.08)'; ctx.lineWidth = 2; roundRect(ctx,72,220,1056,1200,44,false,true);
-      if (kind === 'result'){
-        const data = appData.results[latestResultCode];
-        const badgeSvg = renderBadge(latestResultCode);
-        const img = await loadImage(svgDataUrl(badgeSvg));
-        const qrUrl = buildPairLink(latestResultCode);
-        const qrData = await makeQrDataUrl(qrUrl, 220);
-        ctx.drawImage(img, 830, 300, 210, 210);
-        ctx.fillStyle = '#6a4d30'; ctx.font = '700 24px Inter, system-ui, sans-serif'; ctx.fillText(data.share, 120, 348);
-        ctx.fillStyle = '#171614'; ctx.font = '800 76px Inter, system-ui, sans-serif'; ctx.fillText(data.name, 120, 438);
-        ctx.font = '500 34px Inter, system-ui, sans-serif'; ctx.fillStyle = '#3e372f';
-        let y = wrapText(ctx, data.description, 120, 540, 780, 52, 5);
-        ctx.fillStyle = '#171614'; ctx.font = '700 28px Inter, system-ui, sans-serif'; ctx.fillText('关键词', 120, y + 120);
-        let tx = 120, ty = y + 160;
-        ctx.font = '600 24px Inter, system-ui, sans-serif';
-        data.keywords.forEach(word=>{ const w = ctx.measureText(word).width + 44; if (tx + w > 930){ tx = 120; ty += 64; } ctx.fillStyle = 'rgba(129,95,61,.12)'; roundRect(ctx, tx, ty-28, w, 46, 22, true, false); ctx.fillStyle = '#5a4937'; ctx.fillText(word, tx+22, ty); tx += w + 14; });
-        ctx.fillStyle = '#7b7268'; ctx.font = '500 24px Inter, system-ui, sans-serif'; ctx.fillText('长按保存这张图，扫二维码直接进入配对链接。', 120, 1290);
-        if (qrData){
-          const qrImg = await loadImage(qrData);
-          ctx.fillStyle = '#ffffff'; roundRect(ctx, 860, 1180, 180, 180, 26, true, false);
-          ctx.strokeStyle = 'rgba(23,22,20,.08)'; ctx.lineWidth = 2; roundRect(ctx, 860, 1180, 180, 180, 26, false, true);
-          ctx.drawImage(qrImg, 880, 1200, 140, 140);
-          ctx.fillStyle = '#7b7268'; ctx.font = '500 20px Inter, system-ui, sans-serif'; ctx.fillText('扫码配对', 900, 1388);
-        }
-        ctx.fillStyle = '#5f554b'; ctx.font = '500 22px Inter, system-ui, sans-serif'; wrapText(ctx, promoLine, 120, 1372, 680, 34, 2);
-      } else {
-        const self = appData.results[latestResultCode];
-        const friend = appData.results[pairCode];
-        const levelKey = getCompatibilityLevel(latestResultCode, pairCode);
-        const level = appData.compatibility[levelKey];
-        const img1 = await loadImage(svgDataUrl(renderBadge(latestResultCode)));
-        const img2 = await loadImage(svgDataUrl(renderBadge(pairCode)));
-        const qrUrl = buildPairLink(latestResultCode);
-        const qrData = await makeQrDataUrl(qrUrl, 220);
-        ctx.drawImage(img1, 140, 310, 220, 220);
-        ctx.drawImage(img2, 840, 310, 220, 220);
-        ctx.fillStyle = '#7b7268'; ctx.font = '700 28px Inter, system-ui, sans-serif'; ctx.fillText(self.name, 152, 566);
-        ctx.fillText(friend.name, 852, 566);
-        ctx.fillStyle = '#6a4d30'; ctx.font = '700 24px Inter, system-ui, sans-serif'; ctx.fillText(level.tagline, 120, 700);
-        ctx.fillStyle = '#171614'; ctx.font = '800 72px Inter, system-ui, sans-serif'; ctx.fillText(level.name, 120, 790);
-        ctx.font = '500 34px Inter, system-ui, sans-serif'; ctx.fillStyle = '#3e372f';
-        wrapText(ctx, level.description, 120, 890, 900, 52, 4);
-        ctx.fillStyle = '#7b7268'; ctx.font = '500 24px Inter, system-ui, sans-serif'; ctx.fillText('长按保存这张图，扫二维码直接进入配对链接。', 120, 1290);
-        if (qrData){
-          const qrImg = await loadImage(qrData);
-          ctx.fillStyle = '#ffffff'; roundRect(ctx, 860, 1180, 180, 180, 26, true, false);
-          ctx.strokeStyle = 'rgba(23,22,20,.08)'; ctx.lineWidth = 2; roundRect(ctx, 860, 1180, 180, 180, 26, false, true);
-          ctx.drawImage(qrImg, 880, 1200, 140, 140);
-          ctx.fillStyle = '#7b7268'; ctx.font = '500 20px Inter, system-ui, sans-serif'; ctx.fillText('扫码配对', 900, 1388);
-        }
-        ctx.fillStyle = '#5f554b'; ctx.font = '500 22px Inter, system-ui, sans-serif'; wrapText(ctx, promoLine, 120, 1372, 680, 34, 2);
-      }
-      ctx.fillStyle = '#171614'; ctx.font = '700 24px Inter, system-ui, sans-serif'; ctx.fillText('footi', 120, 1480);
-      ctx.fillStyle = '#7b7268'; ctx.font = '500 22px Inter, system-ui, sans-serif'; ctx.fillText(getResultUrl(latestResultCode).replace(/^https?:\/\//,''), 200, 1480);
-      const link = document.createElement('a');
-      link.href = canvas.toDataURL('image/png');
-      link.download = kind === 'result' ? 'footi-result.png' : 'footi-compatibility.png';
-      link.click();
-      showToast('分享图已保存');
-    }
-
     function roundRect(ctx, x, y, w, h, r, fill, stroke){
       ctx.beginPath();
       ctx.moveTo(x+r, y); ctx.arcTo(x+w, y, x+w, y+h, r); ctx.arcTo(x+w, y+h, x, y+h, r); ctx.arcTo(x, y+h, x, y, r); ctx.arcTo(x, y, x+w, y, r);
@@ -674,10 +576,35 @@
       }
     }
 
+
+    function getSpoilerByCode(code){
+      const map = {
+        INFJ:{title:"配对剧透",pill:"静音系",lead:"你这类脚的配对感像半夜走路不响的那种默契。朋友一靠近，氛围会先安静下来，再慢慢开始同步。",a:"适合遇到节奏稳、愿意陪你把路走细的人。",b:"相性页里经常会出现一种“原来你也懂”的感觉。"},
+        ENFJ:{title:"配对剧透",pill:"C位系",lead:"你的配对感很像两个人站在一块就自动形成主舞台。朋友测完之后，画面会一下子亮起来。",a:"很容易点亮一段关系的镜头感和故事感。",b:"相性高的时候，会有很强的并肩上场感。"},
+        ENFP:{title:"配对剧透",pill:"水波系",lead:"你的配对感像一脚踩进水里，涟漪一圈圈荡开。朋友一来，互动会先活起来。",a:"适合和会接梗、愿意一起乱跑的人配对。",b:"相性页通常会比较有火花，也很会长出奇怪的小剧情。"},
+        INFP:{title:"配对剧透",pill:"赤脚系",lead:"你的配对感是软的、轻的、贴地的。朋友测完以后，关系会像慢慢落地一样展开。",a:"适合遇到能懂你节奏、也尊重你边界的人。",b:"相性页里会更强调气味、触感和陪伴感。"},
+        INTJ:{title:"配对剧透",pill:"黑魔法系",lead:"你的配对感像法阵合拢。朋友一测完，页面会像被一根暗线牵住。",a:"适合和脑回路完整、站位明确的人同行。",b:"相性页里会很有“我们早就看见彼此了”的味道。"},
+        ENTJ:{title:"配对剧透",pill:"主场系",lead:"你的配对感像两个人在同一块地板上接管现场。朋友来了，整个配对页都会更有主场感。",a:"相性高的时候，站在一起会很像天然成队。",b:"相性页里会出现很强的推进感和掌控感。"},
+        ENTP:{title:"配对剧透",pill:"豆里豆气",lead:"你的配对感像两颗豆子突然开始互相弹射。朋友测完后，故事通常会往很怪但很好玩的方向发展。",a:"适合和会接住你奇怪脑回路的人一起配。",b:"相性页里经常有一种“怎么会这样，但这样也行”的快乐。"},
+        INTP:{title:"配对剧透",pill:"低温系",lead:"你的配对感像冬天玻璃上的雾气，靠近之后才慢慢显影。朋友测完，配对页面会有一种清冷的顺感。",a:"适合和能陪你把思路走到底的人配。",b:"相性页里会出现很细很准的默契感。"},
+        ISTJ:{title:"配对剧透",pill:"标准件",lead:"你的配对感很稳，像尺寸对上的榫卯。朋友测完后，页面会呈现一种整整齐齐的合脚感。",a:"适合和你一样珍惜步幅与秩序的人。",b:"相性页通常会带一点稳定、耐走、越走越顺的气质。"},
+        ESTJ:{title:"配对剧透",pill:"行军系",lead:"你的配对感很像两双靴子一起落地，方向马上就立住了。朋友测完，场面会非常利索。",a:"适合和你一起往前推事情的人配。",b:"相性页里会有一种“开走”的气势。"},
+        ISFJ:{title:"配对剧透",pill:"绒绒系",lead:"你的配对感像两团软绵绵的毛绒碰在一起。朋友测完，整个页面会更柔软，也更有抱抱感。",a:"适合和会珍惜温度、会给回应的人配。",b:"相性页里会更强调陪伴和小小的安心。"},
+        ESFJ:{title:"配对剧透",pill:"花香系",lead:"你的配对感像花香扩散，朋友一测完，整段关系会显得很有光泽。",a:"适合和你一起把气氛养漂亮的人配。",b:"相性页通常会更甜、更热闹，也更会出片。"},
+        ISTP:{title:"配对剧透",pill:"耐磨系",lead:"你的配对感像一层很厚的脚底老茧，看起来不响，实际特别扛用。朋友测完后，画面会显得很结实。",a:"适合和你一起处理现场、一起见招拆招的人配。",b:"相性页里会有很强的实战感。"},
+        ESTP:{title:"配对剧透",pill:"展示系",lead:"你的配对感很有现场张力，朋友一来，配对页会马上变得热闹。",a:"适合和你一起把瞬间过成高光的人配。",b:"相性页里经常会出现冲劲、笑点和很强的镜头感。"},
+        ISFP:{title:"配对剧透",pill:"无脚鸟系",lead:"你的配对感像风吹过地面，没有多余的响动，但会留下很柔软的痕迹。",a:"适合和能跟上你呼吸感的人配。",b:"相性页里会有一种轻飘飘却很贴心的靠近。"},
+        ESFP:{title:"配对剧透",pill:"营业系",lead:"你的配对感很会发光，朋友一测完，整个页面都会像被打了柔焦高光。",a:"适合和你一起出片、一起发亮的人配。",b:"相性页里经常会很美、很甜、很会营业。"}
+      };
+      return map[code] || {title:"配对剧透",pill:"footi",lead:"朋友测完之后，这页会长出你们的相性结果。",a:"不同的脚站在一起，会有不同的镜头感。",b:"你们的故事会在下一页继续。"};
+    }
+
+
     function renderResult(){
       const data = appData.results[latestResultCode];
       if (!data) return;
       const pairLink = buildPairLink(latestResultCode);
+      const spoiler = getSpoilerByCode(latestResultCode);
       viewEls.result.innerHTML = `
         <div class="card result-card" id="resultCard">
           <div class="result-head">
@@ -691,30 +618,41 @@
           <p class="desc">${data.description}</p>
           <div class="keywords">${data.keywords.map(k => `<span class="tag">${k}</span>`).join('')}</div>
 
+          <div class="spoiler-box">
+            <div class="spoiler-head">
+              <div class="spoiler-title">${spoiler.title}</div>
+              <div class="spoiler-pill">${spoiler.pill}</div>
+            </div>
+            <div class="spoiler-copy">${spoiler.lead}</div>
+            <div class="spoiler-mini">
+              <div class="spoiler-mini-card">
+                <div class="spoiler-mini-label">配对气质</div>
+                <div class="spoiler-mini-text">${spoiler.a}</div>
+              </div>
+              <div class="spoiler-mini-card">
+                <div class="spoiler-mini-label">翻页之后</div>
+                <div class="spoiler-mini-text">${spoiler.b}</div>
+              </div>
+            </div>
+          </div>
+
           <div class="section share-box">
             <div class="section-title">朋友配对链接</div>
             <div class="subtle">把这条链接发给朋友。朋友打开后会先做测试，做完就会自动进入你们的相性页。</div>
             <div class="linkline" id="pairLinkText">${pairLink}</div>
-            <div class="qr-wrap">
-              <div class="qr-card" id="resultQrBox"></div>
-              <div class="qr-note">扫码也可以直接进入这条配对链接，适合放在截图分享页里一起转发。</div>
-            </div>
             <div class="actions">
               <button class="btn accent" id="copyPairBtn">复制配对链接</button>
-              <button class="btn secondary" id="saveResultCardBtn">保存分享图</button>
-              <button class="btn secondary" id="goCompatBtn">查看相性</button>
+              <button class="btn secondary" id="goCompatBtn">查看相性入口</button>
               <button class="btn secondary" id="restartBtn">重新测试</button>
             </div>
             <div class="promo-note">${promoLine}</div>
           </div>
         </div>
       `;
-      renderQrInto(document.getElementById('resultQrBox'), pairLink);
       document.getElementById('copyPairBtn').addEventListener('click', async () => {
         const ok = await copyText(pairLink);
         showToast(ok ? '链接已复制' : '复制失败');
       });
-      document.getElementById('saveResultCardBtn').addEventListener('click', () => saveShareCard('result'));
       document.getElementById('goCompatBtn').addEventListener('click', () => setView('compat'));
       document.getElementById('restartBtn').addEventListener('click', restartTest);
     }
@@ -732,6 +670,7 @@
       if (shareAxis(a, b)) return 'B';
       return 'D';
     }
+
 
     function renderCompat(){
       if (!latestResultCode || !appData.results[latestResultCode]){
@@ -755,43 +694,51 @@
         </div>` : '';
       if (!(pairCode && validCodes.has(pairCode))){
         const selfLink = buildPairLink(selfCode);
+        const spoiler = getSpoilerByCode(selfCode);
         viewEls.compat.innerHTML = `
           <div class="card compat-card">
             <div class="compat-head">
               <div>
                 <div class="pill">footi compatibility</div>
                 <h2 class="compat-name">朋友相性</h2>
-                <p class="share-line">把你的链接发给朋友，等朋友做完测试，就会在同一条链接里长出你们的配对结果。</p>
+                <p class="share-line">把你的链接发给朋友，等朋友做完测试，这里就会长出你们的配对结果。</p>
               </div>
             </div>
-            <div class="compat-emblems">
-              <div class="emblem-wrap">${renderBadge(selfCode)}</div>
-              <div class="divider-dot">+</div>
-              <div class="emblem-wrap">${renderQuestionMark('players')}</div>
+
+            <div class="compat-stage">
+              <div class="compat-stage-head">
+                <div class="compat-ribbon">配对入口</div>
+                <div class="tiny">for your friend</div>
+              </div>
+              <div class="compat-preview">
+                <div class="compat-preview-row">
+                  <div class="emblem-wrap">${renderBadge(selfCode)}</div>
+                  <div class="spark">+</div>
+                  <div class="emblem-wrap">${renderQuestionMark('players')}</div>
+                </div>
+              </div>
+              <div class="compat-story">
+                <p>${spoiler.lead}</p>
+                <p style="margin-top:10px;">把链接发出去之后，朋友会先完成自己的测试，然后自动回到这里。到时候这页会把你们两个的结果放在一起，长出一段专属的配对剧情。</p>
+              </div>
             </div>
-            <div class="section share-box">
+
+            <div class="compat-link-box">
               <div class="section-title">你的朋友配对链接</div>
               <div class="linkline">${selfLink}</div>
-              <div class="qr-wrap">
-                <div class="qr-card" id="compatEmptyQrBox"></div>
-                <div class="qr-note">把这张码和链接一起发出去，朋友扫码后先做测试，完成后会直接回到你们的配对页。</div>
-              </div>
-              <div class="actions">
+              <div class="mini-actions">
                 <button class="btn accent" id="copySelfPairBtn">复制配对链接</button>
-                <button class="btn secondary" id="saveResultCardBtn">保存分享图</button>
                 <button class="btn secondary" id="backResultBtn">返回结果</button>
               </div>
-              <div class="promo-note">${promoLine}</div>
             </div>
             ${historyHtml}
+            <div class="promo-note">${promoLine}</div>
           </div>
         `;
-        renderQrInto(document.getElementById('compatEmptyQrBox'), selfLink);
         document.getElementById('copySelfPairBtn').addEventListener('click', async () => {
           const ok = await copyText(selfLink);
           showToast(ok ? '链接已复制' : '复制失败');
         });
-        document.getElementById('saveResultCardBtn').addEventListener('click', () => saveShareCard('result'));
         document.getElementById('backResultBtn').addEventListener('click', () => setView('result'));
         return;
       }
@@ -821,48 +768,48 @@
               <p class="share-line">${level.tagline}</p>
             </div>
           </div>
-          <div class="compat-emblems">
-            <div class="emblem-wrap">${renderBadge(selfCode)}</div>
-            <div class="divider-dot">×</div>
-            <div class="emblem-wrap">${renderBadge(friendCode)}</div>
-          </div>
-          <div class="compat-grid">
-            <div class="pair-card"><div class="pair-k">你的脚</div><div class="pair-v">${self.name}</div></div>
-            <div class="pair-card"><div class="pair-k">朋友的脚</div><div class="pair-v">${friend.name}</div></div>
-          </div>
-          <div class="section friend-box">
-            <div class="section-title">相性描述</div>
-            <p class="desc" style="margin-top:0;">${level.description}</p>
-            <p class="desc" style="margin-top:10px;">${level.note}</p>
-          </div>
-          <div class="friend-note">${self.name} 和 ${friend.name} 站在一起，会把一段普通的路走出自己的镜头感。你们的节奏会在相遇之后慢慢成形，越走越有样子。</div>
-          <div class="section share-box">
-            <div class="section-title">继续发给朋友</div>
-            <div class="subtle">这条配对链接会把下一位朋友也带回同一组配对入口，扫码和复制都可以继续传播。</div>
-            <div class="linkline">${buildPairLink(selfCode)}</div>
-            <div class="qr-wrap">
-              <div class="qr-card" id="compatQrBox"></div>
-              <div class="qr-note">截图带上这个二维码，朋友扫码后会直接进入测试，做完就能看到和你的相性结果。</div>
+
+          <div class="compat-stage">
+            <div class="compat-stage-head">
+              <div class="compat-ribbon">${level.name}</div>
+              <div class="tiny">pair unlocked</div>
+            </div>
+            <div class="compat-preview-row">
+              <div class="emblem-wrap">${renderBadge(selfCode)}</div>
+              <div class="spark">×</div>
+              <div class="emblem-wrap">${renderBadge(friendCode)}</div>
+            </div>
+            <div class="compat-grid">
+              <div class="pair-card"><div class="pair-k">你的脚</div><div class="pair-v">${self.name}</div></div>
+              <div class="pair-card"><div class="pair-k">朋友的脚</div><div class="pair-v">${friend.name}</div></div>
+            </div>
+            <div class="compat-story">
+              <p>${level.description}</p>
+              <p style="margin-top:10px;">${level.note}</p>
             </div>
           </div>
-          <div class="actions">
-            <button class="btn accent" id="shareSelfBtn">复制我的配对链接</button>
-            <button class="btn secondary" id="saveCompatCardBtn">保存分享图</button>
-            <button class="btn secondary" id="backResultBtn">返回结果</button>
-            <button class="btn secondary" id="restartFromCompatBtn">重新测试</button>
+
+          <div class="friend-note">${self.name} 和 ${friend.name} 放在同一页时，会把一段普通的路走出自己的镜头感。你们的步幅会在相遇之后慢慢成形，越走越有样子。</div>
+
+          <div class="compat-link-box">
+            <div class="section-title">继续发给朋友</div>
+            <div class="subtle">把这条链接继续发出去，下一位朋友也会从同一个入口开始测试，再回到你的配对页里。</div>
+            <div class="linkline">${buildPairLink(selfCode)}</div>
+            <div class="mini-actions">
+              <button class="btn accent" id="shareSelfBtn">复制我的配对链接</button>
+              <button class="btn secondary" id="backResultBtn">返回结果</button>
+            </div>
           </div>
-          <div class="promo-note">${promoLine}</div>
+
           ${mergedHistoryHtml}
+          <div class="promo-note">${promoLine}</div>
         </div>
       `;
-      renderQrInto(document.getElementById('compatQrBox'), buildPairLink(selfCode));
       document.getElementById('shareSelfBtn').addEventListener('click', async () => {
         const ok = await copyText(buildPairLink(selfCode));
         showToast(ok ? '链接已复制' : '复制失败');
       });
-      document.getElementById('saveCompatCardBtn').addEventListener('click', () => saveShareCard('compat'));
       document.getElementById('backResultBtn').addEventListener('click', () => setView('result'));
-      document.getElementById('restartFromCompatBtn').addEventListener('click', restartTest);
     }
 
     function restartTest(){
