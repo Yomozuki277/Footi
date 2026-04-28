@@ -7,169 +7,173 @@
   <meta name="description" content="footi｜测测你是哪种脚" />
   <style>
     :root{
-      --bg:#f7f2e8;
-      --bg-soft:#efe7da;
-      --panel:rgba(255,255,255,.86);
-      --panel-strong:rgba(255,255,255,.96);
-      --text:#171614;
-      --muted:#7b7268;
-      --line:rgba(23,22,20,.10);
-      --line-strong:rgba(23,22,20,.18);
-      --accent:#815f3d;
-      --accent-soft:rgba(129,95,61,.12);
-      --shadow:0 18px 46px rgba(23,22,20,.08);
-      --radius-xl:28px;
-      --radius-lg:22px;
-      --radius-md:16px;
+      --bg:#07090d;
+      --bg2:#0e1320;
+      --white:#f7f9fd;
+      --text:#f5f8ff;
+      --muted:#a7b2c9;
+      --blue:#77a9ff;
+      --blue-soft:rgba(119,169,255,.18);
+      --glass:rgba(255,255,255,.15);
+      --glass-strong:rgba(255,255,255,.18);
+      --glass-soft:rgba(255,255,255,.10);
+      --line:rgba(255,255,255,.14);
+      --line-strong:rgba(255,255,255,.24);
+      --shadow:0 20px 64px rgba(0,0,0,.34);
+      --blur:12px;
+      --radius-xl:30px;
+      --radius-lg:24px;
+      --radius-md:18px;
       --safe-bottom:max(16px, env(safe-area-inset-bottom));
       --transition:220ms ease;
     }
-    *{box-sizing:border-box;}
-    html,body{margin:0;min-height:100%;}
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%}
     body{
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
       color:var(--text);
       background:
-        radial-gradient(circle at 14% 12%, rgba(255,255,255,.92), transparent 22%),
-        radial-gradient(circle at 84% 18%, rgba(129,95,61,.08), transparent 17%),
-        radial-gradient(circle at 60% 90%, rgba(255,255,255,.68), transparent 23%),
-        linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%);
-      -webkit-font-smoothing:antialiased;
-      text-rendering:optimizeLegibility;
+        radial-gradient(circle at 12% 18%, rgba(119,169,255,.20), transparent 24%),
+        radial-gradient(circle at 85% 14%, rgba(255,255,255,.07), transparent 18%),
+        radial-gradient(circle at 50% 110%, rgba(119,169,255,.12), transparent 36%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+      overflow-x:hidden;
     }
-    body::before{
-      content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
-      background-image:
-        linear-gradient(rgba(23,22,20,.028) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(23,22,20,.028) 1px, transparent 1px);
-      background-size:30px 30px;
-      mask-image:linear-gradient(180deg, rgba(0,0,0,.6), transparent 84%);
-      opacity:.34;
+    body::before,
+    body::after{
+      content:"";
+      position:fixed;
+      inset:auto;
+      pointer-events:none;
+      filter:blur(60px);
+      opacity:.8;
+      z-index:0;
     }
-    button{font:inherit;}
-    .app{width:min(100%, 560px);margin:0 auto;padding:16px 14px calc(110px + var(--safe-bottom));}
+    body::before{width:180px;height:180px;left:-40px;top:18%;background:rgba(119,169,255,.14);border-radius:999px}
+    body::after{width:160px;height:160px;right:-30px;bottom:16%;background:rgba(255,255,255,.08);border-radius:999px}
+    .app{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:18px 16px calc(110px + var(--safe-bottom))}
+    .view{display:none;animation:fade .25s ease}
+    .view.active{display:block}
+    @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+    .glass{
+      background:linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,.08));
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,.16);
+      backdrop-filter:blur(var(--blur));
+      -webkit-backdrop-filter:blur(var(--blur));
+    }
+    .card{border-radius:var(--radius-xl);padding:20px 18px}
+    .topbar,.bottom-bar,.card,.hero-mark,.option,.btn,.tag,.pill,.level-chip,.emblem-wrap,.story-card,.mini-card,.pair-input,.history-item,.archive-cell,.empty-card,.stat-card,.inline-chip,.pair-linkline{
+      background:linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,.08));
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,.16);
+      backdrop-filter:blur(var(--blur));
+      -webkit-backdrop-filter:blur(var(--blur));
+    }
+
     .topbar{
-      position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:12px;
-      padding:12px 2px 16px;background:linear-gradient(180deg, rgba(247,242,232,.95), rgba(247,242,232,.8), transparent);
-      backdrop-filter:blur(8px);
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      border-radius:26px;padding:12px 14px;margin-bottom:16px;
     }
-    .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.1em;text-transform:lowercase;}
-    .brand-mark{width:40px;height:40px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.82);display:grid;place-items:center;box-shadow:var(--shadow);}
-    .brand-mark svg{width:22px;height:22px;}
-    .tiny{font-size:12px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;}
-    .progress-chip{padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid var(--line);font-size:12px;color:var(--muted);box-shadow:var(--shadow);}
-    .view{display:none;animation:fade .24s ease;}
-    .view.active{display:block;}
-    @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-    .card{
-      border:1px solid var(--line);border-radius:var(--radius-xl);background:linear-gradient(180deg, var(--panel-strong), var(--panel));
-      box-shadow:var(--shadow);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-    }
-    .question-card{padding:22px 18px 18px;overflow:hidden;position:relative;}
-    .question-card::after{
-      content:"";position:absolute;right:-18px;top:-22px;width:110px;height:110px;border-radius:999px;
-      background:radial-gradient(circle, rgba(129,95,61,.12), transparent 65%);
-    }
-    .hero-mark{width:72px;height:72px;border-radius:24px;border:1px solid var(--line);background:rgba(255,255,255,.72);display:grid;place-items:center;margin-bottom:16px;}
-    .hero-mark svg{width:40px;height:40px;}
-    h1,h2,h3,p{margin:0;}
-    .question-no{font-size:12px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px;}
-    .question-text{font-size:26px;line-height:1.28;font-weight:800;letter-spacing:-.04em;max-width:15em;}
-    .helper{margin-top:12px;color:var(--muted);font-size:14px;line-height:1.7;}
-    .progress-line{height:8px;border-radius:999px;background:rgba(23,22,20,.07);overflow:hidden;margin:18px 0 20px;}
-    .progress-fill{height:100%;width:0;background:linear-gradient(90deg, var(--accent), #ba9871);border-radius:inherit;transition:width .3s ease;}
-    .options{display:grid;gap:12px;}
-    .option{
-      width:100%;text-align:left;padding:16px 16px 16px 14px;border-radius:20px;border:1px solid var(--line);background:rgba(255,255,255,.76);
-      display:flex;align-items:flex-start;gap:14px;cursor:pointer;transition:transform var(--transition),border-color var(--transition),box-shadow var(--transition),background var(--transition);
-      min-height:68px;
-    }
-    .option:hover{transform:translateY(-1px);border-color:var(--line-strong);box-shadow:0 10px 24px rgba(23,22,20,.06);}
-    .option.active{background:var(--accent-soft);border-color:rgba(129,95,61,.32);}
-    .option-key{width:32px;height:32px;border-radius:999px;background:rgba(23,22,20,.06);display:grid;place-items:center;font-weight:800;font-size:13px;flex:0 0 auto;}
-    .option.active .option-key{background:rgba(129,95,61,.16);color:#60472f;}
-    .option-text{font-size:15px;line-height:1.65;}
-    .bottom-bar{
-      position:fixed;left:0;right:0;bottom:0;z-index:20;padding:12px 14px calc(12px + var(--safe-bottom));
-      background:linear-gradient(180deg, rgba(247,242,232,0), rgba(247,242,232,.92) 26%, rgba(247,242,232,.98));
-      backdrop-filter:blur(10px);
-    }
-    .bottom-wrap{width:min(100%, 560px);margin:0 auto;display:flex;gap:12px;}
-    .btn{
-      appearance:none;border:1px solid var(--line);border-radius:999px;padding:14px 18px;min-height:52px;cursor:pointer;
-      transition:transform var(--transition),border-color var(--transition),box-shadow var(--transition),background var(--transition),opacity var(--transition);
-    }
-    .btn:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(23,22,20,.06);border-color:var(--line-strong);}
-    .btn:disabled{opacity:.38;cursor:not-allowed;transform:none;box-shadow:none;}
-    .btn.secondary{background:rgba(255,255,255,.76);color:var(--text);flex:0 0 112px;}
-    .btn.primary{background:var(--text);color:#fbf8f3;border-color:rgba(23,22,20,.92);flex:1;}
-    .btn.accent{background:var(--accent);color:#fbf8f3;border-color:var(--accent);}
-    .result-card,.compat-card{padding:20px 18px;}
-    .result-head,.compat-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;}
-    .pill{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;background:rgba(129,95,61,.12);color:#6a4d30;font-size:12px;letter-spacing:.08em;text-transform:uppercase;border:1px solid rgba(129,95,61,.16);}
-    .result-name,.compat-name{font-size:34px;line-height:1;font-weight:850;letter-spacing:-.05em;margin-top:12px;}
-    .share-line{margin-top:10px;font-size:16px;color:#5f4a34;font-weight:700;}
-    .desc{margin-top:14px;font-size:15px;line-height:1.82;color:var(--text);}
-    .keywords{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;}
-    .tag{padding:8px 12px;border-radius:999px;background:rgba(23,22,20,.05);font-size:13px;color:#514a42;}
-    .emblem-wrap{
-      width:132px;height:132px;border-radius:34px;border:1px solid var(--line);background:rgba(255,255,255,.7);display:grid;place-items:center;flex:0 0 auto;overflow:hidden;
-      box-shadow:0 12px 24px rgba(23,22,20,.06);
-    }
-    .emblem-wrap svg{width:110px;height:110px;}
-    .section{margin-top:16px;}
-    .section-title{font-size:12px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px;}
-    .share-box,.friend-box{padding:16px;border-radius:20px;border:1px solid var(--line);background:rgba(255,255,255,.65);}
-    .linkline{word-break:break-all;font-size:13px;line-height:1.6;color:#62584f;padding:10px 12px;border-radius:14px;background:rgba(23,22,20,.04);margin-top:10px;}
-    .actions{display:grid;gap:12px;margin-top:16px;}
-    .toast{position:fixed;left:50%;bottom:calc(92px + var(--safe-bottom));transform:translateX(-50%);padding:12px 16px;border-radius:999px;background:rgba(23,22,20,.92);color:#fff;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s ease;z-index:40;}
-    .toast.show{opacity:1;}
-    .compat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;}
-    .pair-card{padding:14px 12px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.7);}
-    .pair-k{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
-    .pair-v{font-size:16px;font-weight:760;line-height:1.45;}
-    .compat-emblems{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-top:18px;}
-    .compat-emblems .emblem-wrap{width:104px;height:104px;border-radius:28px;justify-self:center;}
-    .compat-emblems .emblem-wrap svg{width:84px;height:84px;}
-    .divider-dot{width:36px;height:36px;border-radius:999px;background:rgba(129,95,61,.12);display:grid;place-items:center;color:#7d5b39;font-weight:800;border:1px solid rgba(129,95,61,.16);}
-    .empty{padding:28px 18px;text-align:center;color:var(--muted);line-height:1.8;}
-    .friend-note{margin-top:16px;padding:14px 16px;border-radius:18px;background:rgba(129,95,61,.10);color:#664c34;line-height:1.7;border:1px solid rgba(129,95,61,.14);}
-    .subtle{font-size:14px;color:var(--muted);line-height:1.75;}
-    .promo-note{margin-top:16px;padding:14px 16px;border-radius:18px;background:rgba(23,22,20,.04);border:1px dashed var(--line-strong);color:#5f554b;font-size:14px;line-height:1.8;}
-    .history-list{display:grid;gap:10px;margin-top:12px;}
-    .history-item{display:flex;justify-content:space-between;gap:14px;align-items:center;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.72);border:1px solid var(--line);}
-    .history-item .left{min-width:0;}
-    .history-item .title{font-size:14px;font-weight:760;line-height:1.5;}
-    .history-item .meta{font-size:12px;color:var(--muted);margin-top:2px;}
-    .history-badge{padding:8px 10px;border-radius:999px;background:rgba(129,95,61,.12);border:1px solid rgba(129,95,61,.14);font-size:12px;color:#6a4d30;white-space:nowrap;}
-    .mini-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
+    .brand{display:flex;align-items:center;gap:12px;min-width:0}
+    .brand-mark{width:42px;height:42px;border-radius:16px;display:grid;place-items:center;color:var(--white);background:linear-gradient(180deg, rgba(119,169,255,.28), rgba(255,255,255,.10));border:1px solid rgba(255,255,255,.14)}
+    .brand-mark svg{width:26px;height:26px}
+    .brand-title{font-size:16px;font-weight:800;letter-spacing:.04em}
+    .brand-sub{font-size:12px;color:var(--muted);margin-top:2px}
+    .chip{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);font-size:12px;font-weight:700;color:#d9e8ff;white-space:nowrap}
 
-    .spoiler-box{margin-top:16px;padding:16px;border-radius:22px;border:1px solid rgba(129,95,61,.18);background:linear-gradient(180deg, rgba(129,95,61,.10), rgba(255,255,255,.72));}
-    .spoiler-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;}
-    .spoiler-title{font-size:12px;color:#7b6a57;letter-spacing:.14em;text-transform:uppercase;}
-    .spoiler-pill{padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.72);border:1px solid rgba(129,95,61,.12);font-size:12px;color:#6a4d30;}
-    .spoiler-copy{font-size:15px;line-height:1.8;color:#4a3b2d;}
-    .spoiler-mini{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
-    .spoiler-mini-card{padding:12px 12px 14px;border-radius:18px;background:rgba(255,255,255,.74);border:1px solid var(--line);}
-    .spoiler-mini-label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
-    .spoiler-mini-text{font-size:13px;line-height:1.65;color:#5c5147;}
-    .compat-stage{margin-top:16px;padding:16px;border-radius:24px;background:linear-gradient(180deg, rgba(255,255,255,.82), rgba(129,95,61,.08));border:1px solid rgba(129,95,61,.14);}
-    .compat-stage-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;}
-    .compat-ribbon{padding:8px 12px;border-radius:999px;background:rgba(129,95,61,.14);color:#6a4d30;font-size:12px;letter-spacing:.12em;text-transform:uppercase;border:1px solid rgba(129,95,61,.14);}
-    .compat-story{margin-top:14px;padding:16px;border-radius:20px;background:rgba(255,255,255,.76);border:1px solid var(--line);}
-    .compat-story p{font-size:15px;line-height:1.8;color:#4d4338;}
-    .compat-preview{display:grid;gap:12px;margin-top:16px;}
-    .compat-preview-row{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;}
-    .spark{width:42px;height:42px;border-radius:999px;display:grid;place-items:center;background:rgba(129,95,61,.14);border:1px solid rgba(129,95,61,.14);color:#6a4d30;font-weight:800;}
-    .compat-link-box{margin-top:16px;padding:16px;border-radius:22px;background:rgba(255,255,255,.74);border:1px solid var(--line);}
+    .question-card{padding:20px}
+    .hero-row{display:flex;align-items:center;justify-content:flex-start;margin-bottom:16px}
+    .hero-mark{width:68px;height:68px;border-radius:22px;display:grid;place-items:center;color:#eef5ff;background:linear-gradient(180deg, rgba(119,169,255,.22), rgba(255,255,255,.08))}
+    .hero-mark svg{width:38px;height:38px}
+    .question-no{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+    .question-text{margin:0;font-size:28px;line-height:1.42;font-weight:820;letter-spacing:-.02em}
+    .helper{margin:12px 0 0;color:var(--muted);font-size:14px;line-height:1.75}
+    .progress-line{height:8px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;margin:18px 0 14px}
+    .progress-fill{height:100%;width:0;background:linear-gradient(90deg, rgba(255,255,255,.55), var(--blue));transition:width .25s ease}
+    .options{display:grid;gap:12px;margin-top:14px}
+    .option{width:100%;text-align:left;padding:14px 16px;border-radius:22px;display:flex;gap:14px;align-items:flex-start;color:var(--text);cursor:pointer;transition:transform var(--transition), border-color var(--transition), background var(--transition)}
+    .option:hover{transform:translateY(-1px);border-color:rgba(119,169,255,.34)}
+    .option.active{border-color:rgba(119,169,255,.45);background:linear-gradient(180deg, rgba(119,169,255,.24), rgba(255,255,255,.09))}
+    .option-key{flex:0 0 auto;width:28px;height:28px;border-radius:999px;display:grid;place-items:center;background:rgba(255,255,255,.10);font-size:12px;font-weight:800;color:#d6e5ff;border:1px solid rgba(255,255,255,.12)}
+    .option-text{font-size:15px;line-height:1.7;font-weight:600}
 
-    @media (max-width:420px){
-      .question-text{font-size:23px;}
-      .result-name,.compat-name{font-size:30px;}
-      .emblem-wrap{width:118px;height:118px;border-radius:28px;}
-      .emblem-wrap svg{width:98px;height:98px;}
-      .compat-emblems .emblem-wrap{width:92px;height:92px;}
-      .compat-emblems .emblem-wrap svg{width:74px;height:74px;}
+    .face-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+    .face-option{position:relative;width:100%;padding:14px;border-radius:24px;text-align:center;color:var(--text);cursor:pointer;transition:transform var(--transition), border-color var(--transition), background var(--transition)}
+    .face-option:hover{transform:translateY(-1px);border-color:rgba(119,169,255,.34)}
+    .face-option.active{border-color:rgba(119,169,255,.45);background:linear-gradient(180deg, rgba(119,169,255,.24), rgba(255,255,255,.09))}
+    .face-option .face-key{position:absolute;left:12px;top:12px;width:24px;height:24px;border-radius:999px;display:grid;place-items:center;font-size:11px;font-weight:800;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.12);color:#d6e5ff}
+    .face-icon{width:100%;aspect-ratio:1/1;display:grid;place-items:center;border-radius:18px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08)}
+    .face-icon svg{width:72%;height:72%;color:#f6fbff}
+
+    .bottom-bar{position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(14px + var(--safe-bottom));z-index:20;background:linear-gradient(180deg, rgba(7,9,13,.0), rgba(7,9,13,.65) 38%, rgba(7,9,13,.9) 100%)}
+    .bottom-wrap{max-width:760px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .btn{min-height:54px;border-radius:999px;padding:12px 16px;border:none;color:var(--text);font-size:15px;font-weight:800;cursor:pointer;transition:transform var(--transition), border-color var(--transition), opacity var(--transition)}
+    .btn:hover{transform:translateY(-1px);border-color:rgba(119,169,255,.34)}
+    .btn.primary{background:linear-gradient(180deg, rgba(119,169,255,.30), rgba(255,255,255,.12))}
+    .btn.secondary{background:linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.08))}
+    .btn.ghost{background:rgba(255,255,255,.08)}
+    .btn.inline{min-height:48px}
+    .btn:disabled{opacity:.42;cursor:not-allowed;transform:none}
+
+    .result-card,.archive-card{padding:20px 18px}
+    .result-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+    .pill,.level-chip,.inline-chip{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;padding:8px 12px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#d7e7ff}
+    .result-name{margin:14px 0 0;font-size:34px;line-height:1.15;letter-spacing:-.03em}
+    .share-line{margin:10px 0 0;font-size:15px;color:#dbe8ff;line-height:1.7}
+    .desc{margin:18px 0 0;font-size:15px;line-height:1.9;color:#edf3ff}
+    .keywords{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+    .tag{padding:8px 12px;border-radius:999px;font-size:12px;color:#dce9ff;border-color:rgba(119,169,255,.24)}
+    .section{margin-top:18px}
+    .section-title{font-size:14px;font-weight:760;line-height:1.5;margin-bottom:10px}
+    .emblem-wrap{width:126px;height:126px;border-radius:34px;display:grid;place-items:center;flex:0 0 auto;overflow:hidden;background:linear-gradient(180deg, rgba(119,169,255,.18), rgba(255,255,255,.08))}
+    .emblem-wrap svg{width:106px;height:106px}
+    .story-grid,.mini-grid,.pair-actions.two,.stats-grid,.archive-grid{display:grid;gap:12px}
+    .story-grid{grid-template-columns:1fr 1fr}
+    .mini-grid{grid-template-columns:1fr 1fr}
+    .story-card,.mini-card,.pair-input,.history-item,.archive-cell,.empty-card,.stat-card,.pair-linkline{border-radius:22px;padding:16px}
+    .story-card strong,.mini-card strong,.stat-title{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+    .story-card p,.mini-card p,.empty-card p{font-size:15px;line-height:1.82;color:#edf4ff;margin:0}
+    .pair-actions.two,.stats-grid{grid-template-columns:1fr 1fr}
+    .pair-input input{width:100%;min-height:52px;border:none;outline:none;background:transparent;color:var(--text);font-size:14px}
+    .pair-input input::placeholder{color:#90a0bb}
+    .pair-linkline{word-break:break-all;font-size:13px;line-height:1.8;color:#e2ecff}
+    .friend-compat{margin-top:18px;display:grid;gap:16px}
+    .compat-band{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .compat-row{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center}
+    .spark{width:44px;height:44px;border-radius:999px;display:grid;place-items:center;background:linear-gradient(180deg, rgba(119,169,255,.26), rgba(255,255,255,.10));border:1px solid rgba(255,255,255,.14);font-weight:900;color:#f7fbff}
+    .stat-card{padding:14px 14px 16px}
+    .stat-value{font-size:16px;font-weight:780;line-height:1.6}
+    .tiny{font-size:12px;color:var(--muted);line-height:1.6}
+    .history-list{display:grid;gap:10px;margin-top:12px}
+    .history-item{display:flex;align-items:center;justify-content:space-between;gap:12px;border-radius:18px;padding:14px}
+    .history-title{font-size:14px;font-weight:760;line-height:1.5}
+    .history-meta,.archive-meta{font-size:12px;color:var(--muted);line-height:1.6;margin-top:4px}
+    .history-badge,.archive-badge{padding:8px 10px;border-radius:999px;background:rgba(119,169,255,.16);border:1px solid rgba(119,169,255,.22);font-size:12px;color:#dce9ff;white-space:nowrap}
+    .promo-note{margin-top:18px;padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.08);border:1px dashed rgba(119,169,255,.26);color:#e2ecff;font-size:14px;line-height:1.8}
+    .archive-header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .archive-grid{grid-template-columns:1fr 1fr;margin-top:16px}
+    .archive-cell{min-height:130px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
+    .archive-cell.locked{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.08);box-shadow:none;filter:saturate(.55)}
+    .archive-cell.locked .archive-foot,.archive-cell.locked .archive-meta,.archive-cell.locked .archive-unknown{color:#7d879a}
+    .archive-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+    .archive-foot{font-size:15px;font-weight:780;line-height:1.45}
+    .archive-unknown{font-size:28px;font-weight:900}
+    .empty-card{text-align:center;padding:28px 18px}
+    .toast{position:fixed;left:50%;bottom:calc(96px + var(--safe-bottom));transform:translateX(-50%);padding:12px 16px;border-radius:999px;background:rgba(255,255,255,.92);color:#08111d;font-size:13px;font-weight:800;opacity:0;pointer-events:none;transition:opacity .2s ease;z-index:30}
+    .toast.show{opacity:1}
+
+    @media (max-width:520px){
+      .app{padding:14px 12px calc(108px + var(--safe-bottom))}
+      .topbar{padding:10px 12px}
+      .question-card,.result-card,.archive-card{padding:18px 16px}
+      .question-text{font-size:24px}
+      .result-name{font-size:30px}
+      .emblem-wrap{width:110px;height:110px;border-radius:30px}
+      .emblem-wrap svg{width:92px;height:92px}
+      .story-grid,.mini-grid,.pair-actions.two,.stats-grid,.archive-grid{grid-template-columns:1fr}
+      .face-icon svg{width:68%;height:68%}
     }
   </style>
 </head>
@@ -186,26 +190,28 @@
           </svg>
         </div>
         <div>
-          <div>footi</div>
-          <div class="tiny">测测你是哪种脚</div>
+          <div class="brand-title">footi</div>
+          <div class="brand-sub">测测你是哪种脚</div>
         </div>
       </div>
-      <div class="progress-chip" id="progressChip">01 / 12</div>
+      <div class="chip" id="progressChip">01 / 14</div>
     </div>
 
     <section class="view active" id="testView">
       <div class="card question-card">
-        <div class="hero-mark" id="questionMark"></div>
+        <div class="hero-row">
+          <div class="hero-mark" id="questionMark"></div>
+        </div>
         <div class="question-no" id="questionNo">question 01</div>
         <h1 class="question-text" id="questionText"></h1>
-        <p class="helper">选一个最像你的反应。没有标准答案。</p>
+        <p class="helper">选一个最像你的反应。</p>
         <div class="progress-line"><div class="progress-fill" id="progressFill"></div></div>
         <div class="options" id="options"></div>
       </div>
     </section>
 
     <section class="view" id="resultView"></section>
-    <section class="view" id="compatView"></section>
+    <section class="view" id="archiveView"></section>
   </div>
 
   <div class="bottom-bar" id="bottomBar">
@@ -222,123 +228,167 @@
 
     const appData = {
       questions: [
-        { id:1, weight:1.5, text:"准备出门，面前有四双符合你尺码的鞋，你会选择？", options:[
-          {label:"A", text:"闻起来最香的（是的你闻了一遍）", primary:"Se", secondary:null},
-          {label:"B", text:"外观最符合你审美的", primary:"Fi", secondary:null},
-          {label:"C", text:"会说话的鞋，大喊不要穿它", primary:"Ne", secondary:null},
-          {label:"D", text:"会说话的鞋，大喊快来穿它", primary:"Ni", secondary:null},
-          {label:"E", text:"不换，就要脚上的拖鞋", primary:"Si", secondary:null}
+        { id:1, weight:1.5, icon:'mist', text:'准备出门，面前有四双符合你尺码的鞋，你会选择', options:[
+          {label:'A', text:'闻起来最香的（是的你闻了一遍）', primary:'Se', secondary:null},
+          {label:'B', text:'外观最符合你审美的', primary:'Fi', secondary:null},
+          {label:'C', text:'会说话的鞋，大喊不要穿它', primary:'Ne', secondary:null},
+          {label:'D', text:'会说话的鞋，大喊快来穿它', primary:'Ni', secondary:null},
+          {label:'E', text:'不换，就要脚上的拖鞋', primary:'Si', secondary:null}
         ]},
-        { id:2, weight:1.0, text:"你在门口看到一个清洁工，他问你有没有需要带走的垃圾，你选择？", options:[
-          {label:"A", text:"回去把垃圾袋拿给他", primary:"Si", secondary:"Te"},
-          {label:"B", text:"把最臭的鞋给他", primary:"Se", secondary:null},
-          {label:"C", text:"自己躺进清洁车里", primary:"Ne", secondary:null},
-          {label:"D", text:"别碍事", primary:"Te", secondary:null}
+        { id:2, weight:1.0, icon:'bag', text:'你在门口看到一个清洁工，他问你有没有要带走的垃圾，你选择', options:[
+          {label:'A', text:'回家拿垃圾袋', primary:'Si', secondary:'Te'},
+          {label:'B', text:'把最臭的鞋给他', primary:'Se', secondary:null},
+          {label:'C', text:'自己躺进清洁车里', primary:'Ne', secondary:null},
+          {label:'D', text:'别碍事', primary:'Te', secondary:null}
         ]},
-        { id:3, weight:0.5, text:"打发走清洁工之后，你来到家门口的走廊，但是感觉和平常不一样？", options:[
-          {label:"A", text:"发现走廊的门都贴着一样的对联", primary:"Si", secondary:null},
-          {label:"B", text:"感觉地板上有很多脚要冲出来踹你", primary:"Se", secondary:"Ni"},
-          {label:"C", text:"觉得走廊没有尽头", primary:"Ni", secondary:null},
-          {label:"D", text:"不管是什么异常，先回家", primary:"Te", secondary:"Si"}
+        { id:3, weight:1.0, icon:'hall', text:'打发走清洁工后，你来到家门口的走廊，但是感觉和平常不一样', options:[
+          {label:'A', text:'发现走廊的门都贴着一样的对联', primary:'Si', secondary:null},
+          {label:'B', text:'感觉地板上有很多脚要冲出来踹你', primary:'Se', secondary:'Ni'},
+          {label:'C', text:'觉得走廊没有尽头', primary:'Ni', secondary:null},
+          {label:'D', text:'不管是什么异常，先回家', primary:'Si', secondary:'Te'}
         ]},
-        { id:4, weight:1.0, text:"街上的人都在往一个方向单脚跳跃，你会？", options:[
-          {label:"A", text:"一键跟随，跳跃不是罪过", primary:"Se", secondary:null},
-          {label:"B", text:"这群人是丧尸吧，迅速远离", primary:"Te", secondary:"Se"},
-          {label:"C", text:"我在做梦，寻找异次元入口", primary:"Ni", secondary:null},
-          {label:"D", text:"这些都是我的教徒，来跟随我的", primary:"Fe", secondary:"Ni"}
+        { id:4, weight:1.0, icon:'jump', text:'街上的人都在往一个方向单脚跳跃，你会', options:[
+          {label:'A', text:'一键跟随，跳跃不是罪过', primary:'Se', secondary:null},
+          {label:'B', text:'一群丧尸，迅速远离', primary:'Te', secondary:'Se'},
+          {label:'C', text:'我在做梦，寻找异次元入口', primary:'Ni', secondary:null},
+          {label:'D', text:'这都是跟随我的教徒', primary:'Fe', secondary:'Ni'}
         ]},
-        { id:5, weight:1.5, text:"你有点累，原地躺下，地面长出一只脚踹你？", options:[
-          {label:"A", text:"来者不善，左右闪避，必要时一脚踹回去", primary:"Se", secondary:null},
-          {label:"B", text:"哦吼帮我按摩一下那边对对对", primary:"Fi", secondary:"Se"},
-          {label:"C", text:"强迫症犯了，给他修剪指甲", primary:"Ti", secondary:null},
-          {label:"D", text:"把自己精挑细选的鞋子给他穿", primary:"Fe", secondary:null}
+        { id:5, weight:1.5, icon:'kick', text:'你有点累，原地躺下，地面长出一只脚踹你', options:[
+          {label:'A', text:'来者不善，左右闪避，必要时一脚踹回去', primary:'Se', secondary:null},
+          {label:'B', text:'哦吼帮我按摩一下那边对对对', primary:'Fi', secondary:'Se'},
+          {label:'C', text:'强迫症犯了，给他修剪指甲', primary:'Ti', secondary:null},
+          {label:'D', text:'把自己精挑细选的鞋子给他穿', primary:'Fe', secondary:null}
         ]},
-        { id:6, weight:1.5, text:"有人光着脚说你偷了她的鞋子，你会？", options:[
-          {label:"A", text:"无端的指责，让她拿出证据", primary:"Ti", secondary:null},
-          {label:"B", text:"诉说自己的脚多么适合这双鞋", primary:"Fi", secondary:null},
-          {label:"C", text:"说自己有脚气", primary:"Se", secondary:null},
-          {label:"D", text:"看她可怜说自己有三双不穿的鞋可以送她一双", primary:"Fe", secondary:null}
+        { id:6, weight:1.5, icon:'shoe', text:'有人光着脚说你偷了她的鞋子，你会', options:[
+          {label:'A', text:'无端的指责，让她拿出证据', primary:'Ti', secondary:null},
+          {label:'B', text:'诉说自己的脚多么适合这双鞋', primary:'Fi', secondary:null},
+          {label:'C', text:'说我有脚气', primary:'Se', secondary:null},
+          {label:'D', text:'看她可怜说家里有三双不穿的鞋可以送她一双', primary:'Fe', secondary:null}
         ]},
-        { id:7, weight:1.0, text:"迎面走来了三个人，他们说这是一个副本世界，你会？", options:[
-          {label:"A", text:"我竟然是副本npc，令人悲伤", primary:"Fi", secondary:"Ni"},
-          {label:"B", text:"我也是玩家，带我一个", primary:"Fe", secondary:"Ne"},
-          {label:"C", text:"联系精神病院吴主任", primary:"Te", secondary:null},
-          {label:"D", text:"说他们有三双鞋子丢在自己家里了", primary:"Ne", secondary:null}
+        { id:7, weight:1.0, icon:'players', text:'迎面走来了三个人，他们说这不是真实世界，你会', options:[
+          {label:'A', text:'我不是真实的存在', primary:'Ni', secondary:'Fi'},
+          {label:'B', text:'我也是误入这里的，一起走吧', primary:'Fe', secondary:'Ne'},
+          {label:'C', text:'联系精神病院吴主任', primary:'Te', secondary:null},
+          {label:'D', text:'说他们有三双鞋子丢在自己家里了', primary:'Ne', secondary:null}
         ]},
-        { id:8, weight:1.5, text:"你来到大巴站，你更期待？", options:[
-          {label:"A", text:"坐上夜宵专线，享受夜晚", primary:"Se", secondary:null},
-          {label:"B", text:"离开副本世界的通道，我要去真实世界看看", primary:"Ni", secondary:null},
-          {label:"C", text:"和偶遇的乘客聊天，结交朋友", primary:"Fe", secondary:null},
-          {label:"D", text:"晕车，选择相信脚的力量！", primary:"Si", secondary:null}
+        { id:8, weight:1.5, icon:'bus', text:'你来到大巴站，你更期待', options:[
+          {label:'A', text:'坐上夜宵专线，享受夜晚', primary:'Se', secondary:null},
+          {label:'B', text:'离开这个世界的通道，我要前往真实', primary:'Ni', secondary:null},
+          {label:'C', text:'和偶遇的乘客聊天，结交朋友', primary:'Fe', secondary:null},
+          {label:'D', text:'晕车，选择相信脚的力量！', primary:'Si', secondary:null}
         ]},
-        { id:9, weight:1.5, text:"车站广播突然说你十分钟后会死，然后开始播放你最喜欢的音乐，你会？", options:[
-          {label:"A", text:"广播说的未必是真的，谁在操控广播？", primary:"Ti", secondary:null},
-          {label:"B", text:"先远离周围可能的危险来源，伺机而动", primary:"Te", secondary:"Se"},
-          {label:"C", text:"坐十分钟，听听自己最喜欢的歌是什么", primary:"Fi", secondary:null},
-          {label:"D", text:"好好听，哼唱起来，献给世界最后一舞", primary:"Se", secondary:null}
+        { id:9, weight:1.5, icon:'radio', text:'车站广播突然说你十分钟后会死，然后开始播放你最喜欢的音乐，你会', options:[
+          {label:'A', text:'广播说的未必是真的，谁在操控广播？', primary:'Ti', secondary:null},
+          {label:'B', text:'先远离周围可能的危险来源，伺机而动', primary:'Te', secondary:'Se'},
+          {label:'C', text:'坐十分钟，听听自己最喜欢的歌是什么', primary:'Fi', secondary:null},
+          {label:'D', text:'好好听，哼唱起来，献给世界最后一舞', primary:'Se', secondary:'Fe'}
         ]},
-        { id:10, weight:1.5, text:"回到最初的房间，你发现自己真的不是房间的主人，还偷穿了别人的鞋，你会？", options:[
-          {label:"A", text:"找到房间的主人", primary:"Fe", secondary:"Te"},
-          {label:"B", text:"心安理得住下", primary:"Se", secondary:null},
-          {label:"C", text:"写成日记警告后来人", primary:"Si", secondary:"Ni"},
-          {label:"D", text:"我是怎么发现的？", primary:"Ti", secondary:null}
+        { id:10, weight:1.0, icon:'clock', text:'十分钟后你并没有死去，你觉得', options:[
+          {label:'A', text:'愤怒，广播耍我呢', primary:'Te', secondary:null},
+          {label:'B', text:'庆幸，劫后余生', primary:'Si', secondary:null},
+          {label:'C', text:'悲伤，我竟然还活着', primary:'Fi', secondary:null},
+          {label:'D', text:'焦虑，也许死亡在下一秒降临', primary:'Ne', secondary:null},
+          {label:'E', text:'质疑，我其实已经死了', primary:'Ti', secondary:'Ni'}
         ]},
-        { id:11, weight:1.5, text:"你在房间发现了一本日记，上面写了你旅途发生的事情，你看到了自己发现日记本这段剧情。", options:[
-          {label:"A", text:"无所谓，接着看后续发生了什么", primary:"Ni", secondary:null},
-          {label:"B", text:"莫名恐慌，不想从日记本中看到自己的未来", primary:"Fi", secondary:null},
-          {label:"C", text:"谁写的日记？我从来不写日记的", primary:"Ti", secondary:"Si"},
-          {label:"D", text:"拿起笔往下编写剧情", primary:"Ne", secondary:null}
+        { id:11, weight:1.5, icon:'room', text:'回到最初的房间，你发现自己真的不是房间的主人，还穿了别人的鞋，你会', options:[
+          {label:'A', text:'找到房间的主人', primary:'Fe', secondary:'Te'},
+          {label:'B', text:'心安理得住下', primary:'Se', secondary:null},
+          {label:'C', text:'写成日记警告后来人', primary:'Si', secondary:'Ni'},
+          {label:'D', text:'我是怎么发现的？', primary:'Ti', secondary:null}
         ]},
-        { id:12, weight:0.5, text:"你彻底醒了，意识到自己刚才在玩一款叫“水脚的大巴”的游戏，如果可以你还希望体验什么内容？", options:[
-          {label:"A", text:"我还没把所有人变成教徒", primary:"Fe", secondary:"Ni"},
-          {label:"B", text:"大巴的不同路线想逐一体验", primary:"Ne", secondary:"Se"},
-          {label:"C", text:"那四双鞋子还在等待属于它们的脚", primary:"Ni", secondary:"Si"},
-          {label:"D", text:"我要把日记本带出来", primary:"Si", secondary:"Ti"}
+        { id:12, weight:1.5, icon:'diary', text:'你在房间发现了一本日记，日记情节和刚才的旅途故事一样，包括作者发现日记本这段剧情', options:[
+          {label:'A', text:'无所谓，接着看后续发生了什么', primary:'Ni', secondary:null},
+          {label:'B', text:'莫名恐慌，不想从日记本中看到自己的未来', primary:'Fi', secondary:null},
+          {label:'C', text:'作者不是我，我从来不写日记', primary:'Ti', secondary:'Si'},
+          {label:'D', text:'拿起笔往下编写剧情', primary:'Ne', secondary:null}
+        ]},
+        { id:13, weight:0.5, icon:'ending', text:'你彻底醒了，意识到自己刚才在玩一款叫“水脚的大巴”的游戏，如果可以你还希望体验什么内容？', options:[
+          {label:'A', text:'我还没把所有人变成教徒', primary:'Fe', secondary:'Ni'},
+          {label:'B', text:'大巴的不同路线想逐一体验', primary:'Ne', secondary:'Se'},
+          {label:'C', text:'那四双鞋子还在等待属于它们的脚', primary:'Ni', secondary:'Si'},
+          {label:'D', text:'我要把日记本带出来', primary:'Si', secondary:'Ti'}
+        ]},
+        { id:14, weight:0.5, icon:'face', text:'你现在是什么表情', faceOnly:true, options:[
+          {label:'A', face:'laugh', primary:'Fe', secondary:null},
+          {label:'B', face:'angry', primary:'Te', secondary:null},
+          {label:'C', face:'cry', primary:'Fi', secondary:null},
+          {label:'D', face:'calm', primary:'Ti', secondary:null}
         ]}
       ],
       results: {
-        INFJ:{name:"禅者行脚",share:"跳跃不是罪过",description:"这只脚走路没声音的，阿弥陀佛么么哒。",keywords:["静音落地","心流","暗线","轻轻走"]},
-        ENFJ:{name:"猪脚",share:"天生C位，步步生莲",description:"不是猪的脚，是主角的脚。登记的时候工作人员打错字了，但不影响你的主角气质。从小到大，脚心向背尽在你的掌握之中。",keywords:["主角感","发光体","带气氛","聚光灯"]},
-        ENFP:{name:"水脚",share:"并非汗脚",description:"奶奶说这孩子将来会是有脚气的，你不信。你只是喜欢蹦蹦跳跳阳光在闪耀罢了。",keywords:["水波纹","阳光感","爱跳","小神经"]},
-        INFP:{name:"赤脚",share:"并非红色的脚",description:"鞋子都好恶心，如果可以的话你愿意天天裸奔",keywords:["自由派","轻触地面","真感觉","软心肠"]},
-        INTJ:{name:"安其拉脚",share:"黑魔法拥有者",description:"吊车尾的家伙们，羞羞羞",keywords:["法阵","控场","魔压","高冷脚本"]},
-        ENTJ:{name:"脚之主",share:"天生的主人",description:"你是脚的主人，鞋子的主人，地板的主人，路人的主人。",keywords:["王者脚跟","统治力","掌控台面","主场"]},
-        ENTP:{name:"豆脚",share:"有股魅劲",description:"平生最爱干的事是让豆包帮你注销其他人的脚",keywords:["豆里豆气","机灵","爱整活","怪点子"]},
-        INTP:{name:"冰脚",share:"一百床被子都捂不热",description:"你是冬天限定的一款冰系武器。",keywords:["冷白皮","低温区","脑内风暴","结霜"]},
-        ISTJ:{name:"伪脚",share:"一切看起来很正常",description:"脚掌左右对称，脚趾头长短一致。一只标准的脚。",keywords:["标准件","对称美学","整整齐齐","稳定版"]},
-        ESTJ:{name:"京的脚",share:"士兵脚丫",description:"AUV是地地道道的京之脚，穿上靴子去踢前面那个廊坊孩子的屁股。",keywords:["靴子落地","行军步","带队感","利索"]},
-        ISFJ:{name:"毛脚",share:"毛毛玩偶的脚",description:"好萌的毛毛脚，全世界人类都想被你踩。",keywords:["绒绒的","抱一抱","软萌发电","安心感"]},
-        ESFJ:{name:"真脚无香",share:"纯真的脚味",description:"你路过的地方，花儿都为你倾倒",keywords:["花香轨迹","会照顾人","热闹体质","甜味"]},
-        ISTP:{name:"防弹脚",share:"厚厚的老茧",description:"脚界风衣是用你的脚皮做的，特别厚实的说",keywords:["耐磨层","硬核感","厚实派","现场处理"]},
-        ESTP:{name:"竖中指的脚",share:"低素质人口",description:"中脚指长得最美萌必须时刻展示",keywords:["展示欲","顶上去","现场派","很有劲"]},
-        ISFP:{name:"无脚",share:"无脚鸟",description:"因为不怎么走路，脚退化了。",keywords:["轻飘飘","留白感","慢慢来","风里走"]},
-        ESFP:{name:"美香脚",share:"美美的，香香的。",description:"对你来说，脚也需要营业。",keywords:["营业中","出片体质","香香美美","闪一下"]}
+        INFJ:{name:'禅者行脚',share:'跳跃不是罪过',description:'京圈佛子熏过檀香的脚，十分灵活可以盘串。脚趾头也是极品，具有冬暖夏凉的温润之感，让人不禁上手盘之。盘过的都说：阿弥陀佛么么哒。',keywords:['檀香脚底','温润盘感','静音轻跳','串门佛气']},
+        ENFJ:{name:'猪脚',share:'天生C位，步步生莲',description:'不是猪的脚，是主角的脚。工作人员登记的时候打错字了，但不影响你的主角气质。从小到大，脚心向背尽在你的掌握之中。',keywords:['主场聚光','步步开场','镜头体质','掌控气流']},
+        ENFP:{name:'水脚',share:'并非汗脚',description:'奶奶说这孩子将来会是有脚气的，你不信。你只是喜欢蹦蹦跳跳阳光在闪耀罢了。脚趾甜美，脚汁一滴难求。',keywords:['蹦跳发亮','涟漪脚步','甜味脚趾','晴天体质']},
+        INFP:{name:'赤脚',share:'并非红色的脚',description:'鞋子是敌人。如果可以的话你愿意天天裸奔，脚上只有泥土的芬芳，绝无闷热的脚气。',keywords:['泥土芬芳','自由着地','柔软边界','光脚上路']},
+        INTJ:{name:'麻脚',share:'蹲久了脚麻',description:'袜子破洞的时候脚趾头没有感觉。大家都在等你露出麻脚，但比脚先出现的是密密麻麻的雪花。',keywords:['雪花屏息','发麻预兆','冷静断层','静电法阵']},
+        ENTJ:{name:'脚之主',share:'天生的主人',description:'你是脚的主人，鞋子的主人，地板的主人，路人的主人。踩下去的那一刻所有鞋子自动臣服。',keywords:['主场开路','全场臣服','鞋柜之王','踏地生效']},
+        ENTP:{name:'豆脚',share:'有股魅劲',description:'脚趾头十分灵活，可以发射弹珠。平生最爱干的事是让豆包帮你注销其他人的脚。',keywords:['弹珠脚趾','魅劲发作','点子乱飞','灵活发射']},
+        INTP:{name:'冰脚',share:'一百床被子都捂不热',description:'你是冬天限定的一款冰系武器，所有试图打破被子结界的人或怪物都会被自动攻击。',keywords:['低温武器','被窝结界','霜感脚跟','寒气自带']},
+        ISTJ:{name:'伪脚',share:'一切看起来很正常',description:'脚掌左右对称，脚趾头长短一致。一只符合对称美学的大脚，就是不像人类能长出来的。',keywords:['对称大脚','标准美学','整齐得体','正常到怪']},
+        ESTJ:{name:'京的脚',share:'士兵脚丫',description:'AUV是地地道道的京之脚，穿上靴子去踢前面那个廊坊孩子的屁股。',keywords:['靴底发令','行军步幅','带队体质','脚跟发话']},
+        ISFJ:{name:'毛脚',share:'毛毛玩偶的脚',description:'好萌的毛毛脚，全世界人类都想被你踩。',keywords:['绒绒发电','软萌重踩','玩偶脚心','抱抱体感']},
+        ESFJ:{name:'真脚无香',share:'纯真的脚味',description:'穿过的鞋不臭，塞过的袜不香。真正的脚从不留痕。但你路过的地方，花儿都会为你倾倒。',keywords:['留香过场','花朵倾倒','甜气扩散','脚步带风']},
+        ISTP:{name:'防弹脚',share:'厚厚的老茧',description:'脚界风衣是用你的脚皮做的，特别厚实的说。鞋子是用来保护地板的。',keywords:['老茧护甲','地板保镖','厚实战术','硬核鞋底']},
+        ESTP:{name:'竖中指的脚',share:'低素质人口',description:'中脚指长得最美萌必须时刻展示。比大拇指还长，你习惯用来指纹解锁。',keywords:['展示中指','现场高光','解锁脚趾','顶格出场']},
+        ISFP:{name:'无脚',share:'无脚鸟',description:'因为不怎么走路，脚退化了。',keywords:['轻飘鸟感','留白落地','慢热香气','云端步伐']},
+        ESFP:{name:'美香脚',share:'美美的，香香的。',description:'对你来说，脚也需要营业。每根脚趾都擦了香粉，去吃海底捞从来不用打小料。',keywords:['香粉营业','出片脚趾','美貌上线','自带柔焦']}
+      },
+      spoilers: {
+        INFJ:{lead:'你的配对感像檀香在半夜慢慢散开，朋友一靠近，默契会先落在脚步声里。',a:'很适合遇到能陪你慢慢踩准节奏的人。',b:'相性高的时候，连沉默都像一起走过了很远。'},
+        ENFJ:{lead:'你的配对感自带主场灯光，朋友测完以后，整页都会像上台前一秒那样发亮。',a:'很适合和会接住你气场的人同框。',b:'相性高的时候，会出现很强的并肩登场感。'},
+        ENFP:{lead:'你的配对感像水花溅起来那一下，朋友一来，互动会先活起来，再慢慢长剧情。',a:'很适合和你一起乱跑、一起接梗的人。',b:'相性高的时候，几句话就能把气氛摇亮。'},
+        INFP:{lead:'你的配对感是柔软的、贴地的，朋友测完以后，关系会像脚心落在草地上一样展开。',a:'很适合遇到珍惜你呼吸感的人。',b:'相性高的时候，连靠近都像自然生长。'},
+        INTJ:{lead:'你的配对感像雪花屏一层层亮起，朋友一测完，页面里的暗线就会自己合拢。',a:'很适合和你一起看清局势、一起定方向的人。',b:'相性高的时候，会很有“早就看见彼此”的味道。'},
+        ENTJ:{lead:'你的配对感像鞋柜自动列队，朋友一来，整个场面就会更有秩序和推进感。',a:'很适合和你一起把路走成主场的人。',b:'相性高的时候，站在一起就像天然成队。'},
+        ENTP:{lead:'你的配对感像弹珠脚趾开始连发，朋友一靠近，故事会飞快拐进好玩的地方。',a:'很适合和你互相点燃怪点子的人。',b:'相性高的时候，总会出现出人意料的笑点。'},
+        INTP:{lead:'你的配对感像被窝里起霜的那一层雾，靠近之后才会慢慢显出轮廓。',a:'很适合和你一起把思路走到底的人。',b:'相性高的时候，会长出很细很准的默契。'},
+        ISTJ:{lead:'你的配对感很稳，像尺寸刚好的鞋楦。朋友测完以后，整页都会有一种整整齐齐的合脚感。',a:'很适合珍惜节奏、珍惜步幅的人。',b:'相性高的时候，会越走越顺，越走越稳。'},
+        ESTJ:{lead:'你的配对感像靴子一起落地，朋友一来，方向会立刻清楚，步伐会马上成型。',a:'很适合和你一起推进、一起开路的人。',b:'相性高的时候，会很有开走的气势。'},
+        ISFJ:{lead:'你的配对感像毛绒玩偶的脚尖碰在一起，页面会变得更软，也更有抱抱感。',a:'很适合会珍惜温度和回应的人。',b:'相性高的时候，会很有陪伴和安放感。'},
+        ESFJ:{lead:'你的配对感像花香扩散，朋友测完以后，这段关系会显得特别有光泽。',a:'很适合一起把空气养漂亮的人。',b:'相性高的时候，热闹和温柔会一起出现。'},
+        ISTP:{lead:'你的配对感像一层厚实老茧，看起来安静，实际特别扛用。',a:'很适合一起处理现场、一起落地的人。',b:'相性高的时候，会有很强的实战默契。'},
+        ESTP:{lead:'你的配对感很有现场张力，朋友一来，整个页面都会像被镜头推近一格。',a:'很适合一起制造高光瞬间的人。',b:'相性高的时候，场面会很热，节奏会很快。'},
+        ISFP:{lead:'你的配对感像无脚鸟掠过水面，轻轻一碰就会留下柔软的波纹。',a:'很适合和你共享细腻触感的人。',b:'相性高的时候，整段关系都会变得很轻很美。'},
+        ESFP:{lead:'你的配对感像香粉在灯光下发亮，朋友一测完，页面就会自动进入营业模式。',a:'很适合和你一起出片、一起发光的人。',b:'相性高的时候，每一步都像精心排练过一样漂亮。'}
       },
       dominantFunctions: {
-        INFJ:"Ni", ENFJ:"Fe", ENFP:"Ne", INFP:"Fi",
-        INTJ:"Ni", ENTJ:"Te", ENTP:"Ne", INTP:"Ti",
-        ISTJ:"Si", ESTJ:"Te", ISFJ:"Si", ESFJ:"Fe",
-        ISTP:"Ti", ESTP:"Se", ISFP:"Fi", ESFP:"Se"
+        INFJ:'Ni', ENFJ:'Fe', ENFP:'Ne', INFP:'Fi',
+        INTJ:'Ni', ENTJ:'Te', ENTP:'Ne', INTP:'Ti',
+        ISTJ:'Si', ESTJ:'Te', ISFJ:'Si', ESFJ:'Fe',
+        ISTP:'Ti', ESTP:'Se', ISFP:'Fi', ESFP:'Se'
       },
       temperamentGroups: {
-        NF:["INFJ","ENFJ","ENFP","INFP"],
-        NT:["INTJ","ENTJ","ENTP","INTP"],
-        SJ:["ISTJ","ESTJ","ISFJ","ESFJ"],
-        SP:["ISTP","ESTP","ISFP","ESFP"]
+        NF:['INFJ','ENFJ','ENFP','INFP'],
+        NT:['INTJ','ENTJ','ENTP','INTP'],
+        SJ:['ISTJ','ESTJ','ISFJ','ESFJ'],
+        SP:['ISTP','ESTP','ISFP','ESFP']
       },
       compatibility: {
-        S:{name:"左右脚",description:"一左一右，刚好成双。你们踩在一起时节奏完整，转弯也自然。",note:"你们很会同频发力，走路有一种天生合脚的完整感。",tagline:"你们天生适合成双出现。"},
-        A:{name:"模特脚",description:"站在一起就有画面，抬脚落脚都很会出片。相处的空气感轻盈顺滑。",note:"你们的组合有镜头感，也有配合度，随手就是一张关系海报。",tagline:"你们站在一起，自带走秀机位。"},
-        B:{name:"刚装上的义肢",description:"刚接上时需要一点时间找平衡，越走越顺，走着走着会长出自己的默契。",note:"你们在调整里培养节奏，在相处里长出适合彼此的步幅。",tagline:"你们在调整里长出默契。"},
-        D:{name:"事故脚",description:"火花浓度很高，剧情密度也很高。你们一靠近，现场就会变得很精彩。",note:"这组关系很会制造名场面，很会把日常过成值得回放的片段。",tagline:"你们负责把普通日常过成名场面。"}
+        S:{name:'十指相扣',description:'足弓的形状彼此相吸，你的指缝刚好契合对方的脚趾，贴在一起时像同一双脚在共用重心。',note:'相处建议：多安排并肩的时刻。一起散步、一起决定路线、一起去有风的地方，默契会长得很快。',tagline:'一靠近就像同一双脚自动合拢。'},
+        A:{name:'左右脚',description:'你在左边，我紧靠右。亲生双脚的节奏天然顺滑，抬脚与落脚都能自动找准位置，连气味都很投缘。',note:'相处建议：一个负责开步，一个负责收步。把日常过成并肩前进的动作片，关系会越来越稳。',tagline:'你们一左一右，走起来天生完整。'},
+        B:{name:'刚装上的义肢',description:'这是一双刚装上的新脚，带着新鲜的连接感和微微发亮的磨合欲。越走越熟，越熟越顺，步幅会慢慢长成同一个节拍。',note:'相处建议：多共享具体经历。一起去新的地方、做新的事、留新的脚印，节奏会越磨越漂亮。',tagline:'每一步都在学习彼此的重心。'},
+        D:{name:'踩踏事故',description:'你们一靠近，剧情浓度会立刻升高。脚步一交错，现场就充满火花，日常会长成值得反复回放的名场面。',note:'相处建议：把热烈用在一起闯关、一起冒险、一起冲向新的场景，火花会变成很强的故事感。',tagline:'一脚落下，整段关系马上有戏。'}
       }
     };
 
-    const questionIcons = ["mist","bag","hall","jump","kick","shoe","players","bus","radio","room","diary","ending"];
+    const pairTokens = {
+      INFJ:'c7m2', ENFJ:'l4r8', ENFP:'w2n6', INFP:'h8q3',
+      INTJ:'z5k1', ENTJ:'p9d4', ENTP:'b6t7', INTP:'x3f2',
+      ISTJ:'s1v8', ESTJ:'j7c5', ISFJ:'m4y9', ESFJ:'u2a6',
+      ISTP:'r8e3', ESTP:'n5g1', ISFP:'q6p4', ESFP:'t3h7'
+    };
+    const tokenToCode = Object.fromEntries(Object.entries(pairTokens).map(([k,v]) => [v,k]));
+    const allCodes = Object.keys(appData.results);
+    const latestResultKey = 'footi_latest_result_v9';
+    const pairHistoryKey = 'footi_pair_history_v9';
+
+    const url = new URL(window.location.href);
+    const incomingPairCode = tokenToCode[url.searchParams.get('pair')] || null;
+
     const viewEls = {
       test: document.getElementById('testView'),
       result: document.getElementById('resultView'),
-      compat: document.getElementById('compatView')
+      archive: document.getElementById('archiveView')
     };
     const questionNoEl = document.getElementById('questionNo');
     const questionTextEl = document.getElementById('questionText');
@@ -351,47 +401,12 @@
     const bottomBar = document.getElementById('bottomBar');
     const toast = document.getElementById('toast');
 
-    const validCodes = new Set(Object.keys(appData.results));
-    const pairKeys = {
-      INFJ:"c7m2", ENFJ:"l4r8", ENFP:"w2n6", INFP:"h8q3",
-      INTJ:"z5k1", ENTJ:"p9d4", ENTP:"b6t7", INTP:"x3f2",
-      ISTJ:"s1v8", ESTJ:"j7c5", ISFJ:"m4y9", ESFJ:"u2a6",
-      ISTP:"r8e3", ESTP:"n5g1", ISFP:"q6p4", ESFP:"t3h7"
-    };
-    const pairKeyToCode = Object.fromEntries(Object.entries(pairKeys).map(([code,key]) => [key, code]));
-    const url = new URL(window.location.href);
-    const pairToken = url.searchParams.get('pair');
-    const pairCode = pairKeyToCode[pairToken] || null;
-
-
     let currentIndex = 0;
     let answers = Array(appData.questions.length).fill(null);
-    let latestResultCode = localStorage.getItem('footi_latest_result') || null;
+    let latestResultCode = localStorage.getItem(latestResultKey) || null;
     let currentView = 'test';
+    let activeFriendCode = incomingPairCode;
     let autoNextTimer = null;
-    const pairHistoryKey = 'footi_pair_history';
-
-    function getPairHistory(){
-      try { return JSON.parse(localStorage.getItem(pairHistoryKey) || '[]'); } catch { return []; }
-    }
-    function savePairHistory(items){ localStorage.setItem(pairHistoryKey, JSON.stringify(items.slice(0,12))); }
-    function addPairHistory(selfCode, friendCode, levelKey){
-      if (!selfCode || !friendCode || selfCode === friendCode) return;
-      const key = [selfCode, friendCode].sort().join('-');
-      const history = getPairHistory();
-      const filtered = history.filter(item => item.key !== key);
-      filtered.unshift({ key, selfCode, friendCode, levelKey, time: Date.now() });
-      savePairHistory(filtered);
-    }
-    function formatTime(ts){
-      const d = new Date(ts);
-      const mm = String(d.getMonth()+1).padStart(2,'0');
-      const dd = String(d.getDate()).padStart(2,'0');
-      const hh = String(d.getHours()).padStart(2,'0');
-      const mi = String(d.getMinutes()).padStart(2,'0');
-      return `${mm}.${dd} ${hh}:${mi}`;
-    }
-
 
     function showToast(text){
       toast.textContent = text;
@@ -404,106 +419,63 @@
       currentView = name;
       Object.entries(viewEls).forEach(([key, el]) => el.classList.toggle('active', key === name));
       bottomBar.style.display = name === 'test' ? '' : 'none';
-      if (name === 'result') renderResult();
-      if (name === 'compat') renderCompat();
+      if (name === 'test') {
+        progressChip.textContent = `${String(currentIndex + 1).padStart(2,'0')} / ${String(appData.questions.length).padStart(2,'0')}`;
+      } else if (name === 'result') {
+        progressChip.textContent = 'RESULT';
+        renderResult();
+      } else {
+        progressChip.textContent = 'ARCHIVE';
+        renderArchive();
+      }
       window.scrollTo({top:0, behavior:'smooth'});
     }
-
-    function countAnswered(){
-      return answers.filter(v => v !== null).length;
-    }
-
-    function renderQuestion(){
-      const q = appData.questions[currentIndex];
-      questionNoEl.textContent = `question ${String(currentIndex + 1).padStart(2, '0')}`;
-      questionTextEl.textContent = q.text;
-      progressFill.style.width = `${((currentIndex + 1) / appData.questions.length) * 100}%`;
-      progressChip.textContent = `${String(currentIndex + 1).padStart(2, '0')} / ${String(appData.questions.length).padStart(2, '0')}`;
-      questionMark.innerHTML = renderQuestionMark(questionIcons[currentIndex]);
-      optionsEl.innerHTML = '';
-      q.options.forEach((option, idx) => {
-        const btn = document.createElement('button');
-        btn.className = 'option' + (answers[currentIndex] === idx ? ' active' : '');
-        btn.innerHTML = `<div class="option-key">${option.label}</div><div class="option-text">${option.text}</div>`;
-        btn.addEventListener('click', () => {
-          clearTimeout(autoNextTimer);
-          answers[currentIndex] = idx;
-          renderQuestion();
-          autoNextTimer = setTimeout(() => {
-            if (currentIndex < appData.questions.length - 1){
-              currentIndex += 1;
-              renderQuestion();
-            } else {
-              const result = computeResult();
-              latestResultCode = result.code;
-              localStorage.setItem('footi_latest_result', latestResultCode);
-              if (pairCode && pairCode !== latestResultCode){
-                setView('compat');
-              } else {
-                setView('result');
-              }
-            }
-          }, 220);
-        });
-        optionsEl.appendChild(btn);
-      });
-      prevBtn.disabled = currentIndex === 0;
-      nextBtn.disabled = answers[currentIndex] === null;
-      nextBtn.textContent = currentIndex === appData.questions.length - 1 ? '查看结果' : '下一题';
-    }
-
-    prevBtn.addEventListener('click', () => {
-      clearTimeout(autoNextTimer);
-      if (currentIndex > 0){
-        currentIndex -= 1;
-        renderQuestion();
-      }
-    });
-    nextBtn.addEventListener('click', () => {
-      clearTimeout(autoNextTimer);
-      if (answers[currentIndex] === null) return;
-      if (currentIndex < appData.questions.length - 1){
-        currentIndex += 1;
-        renderQuestion();
-      } else {
-        const result = computeResult();
-        latestResultCode = result.code;
-        localStorage.setItem('footi_latest_result', latestResultCode);
-        if (pairCode && pairCode !== latestResultCode){
-          setView('compat');
-        } else {
-          setView('result');
-        }
-      }
-    });
 
     function computeScores(){
       const scores = {Se:0,Si:0,Ne:0,Ni:0,Te:0,Ti:0,Fe:0,Fi:0};
       appData.questions.forEach((q, i) => {
-        const answerIndex = answers[i];
-        if (answerIndex === null) return;
-        const choice = q.options[answerIndex];
+        const idx = answers[i];
+        if (idx === null) return;
+        const choice = q.options[idx];
         scores[choice.primary] += 2 * q.weight;
         if (choice.secondary) scores[choice.secondary] += 1 * q.weight;
       });
       return scores;
     }
 
+    function getTieBias(){
+      const face = answers[13];
+      const afterRadio = answers[9];
+      const diary = answers[11];
+      return {
+        EI: face === 0 || face === 1 ? 'E' : 'I',
+        SN: (diary === 0 || diary === 3 || afterRadio === 4) ? 'N' : 'S',
+        TF: (face === 1 || answers[5] === 0 || answers[8] === 0) ? 'T' : 'F',
+        EJP: (answers[3] === 1 || answers[1] === 3 || answers[9] === 0) ? 'J' : 'P',
+        IJP: (face === 3 || answers[5] === 0 || answers[10] === 3) ? 'J' : 'P'
+      };
+    }
+
     function getTypeFromScores(scores){
+      const tie = getTieBias();
       const ext = scores.Se + scores.Ne + scores.Te + scores.Fe;
       const intl = scores.Si + scores.Ni + scores.Ti + scores.Fi;
-      const EI = ext >= intl ? 'E' : 'I';
+      const EI = ext === intl ? tie.EI : (ext > intl ? 'E' : 'I');
       const S = scores.Se + scores.Si;
       const N = scores.Ne + scores.Ni;
-      const SN = N >= S ? 'N' : 'S';
+      const SN = N === S ? tie.SN : (N > S ? 'N' : 'S');
       const T = scores.Te + scores.Ti;
       const F = scores.Fe + scores.Fi;
-      const TF = T >= F ? 'T' : 'F';
+      const TF = T === F ? tie.TF : (T > F ? 'T' : 'F');
       let JP = 'J';
       if (EI === 'E') {
-        JP = (scores.Te + scores.Fe) >= (scores.Se + scores.Ne) ? 'J' : 'P';
+        const ej = scores.Te + scores.Fe;
+        const ep = scores.Se + scores.Ne;
+        JP = ej === ep ? tie.EJP : (ej > ep ? 'J' : 'P');
       } else {
-        JP = (scores.Ti + scores.Fi) >= (scores.Si + scores.Ni) ? 'J' : 'P';
+        const ij = scores.Ti + scores.Fi;
+        const ip = scores.Si + scores.Ni;
+        JP = ij === ip ? tie.IJP : (ij > ip ? 'J' : 'P');
       }
       return EI + SN + TF + JP;
     }
@@ -514,308 +486,356 @@
       return { code, scores, result: appData.results[code] };
     }
 
+    function getTemperament(type){
+      return Object.entries(appData.temperamentGroups).find(([, arr]) => arr.includes(type))?.[0] || null;
+    }
+    function shareAxis(a,b){
+      return a[0]===b[0] || a[1]===b[1] || a[2]===b[2] || a[3]===b[3];
+    }
+    function getCompatibilityLevel(a,b){
+      if (a === b) return 'S';
+      if (appData.dominantFunctions[a] === appData.dominantFunctions[b]) return 'S';
+      if (getTemperament(a) === getTemperament(b)) return 'A';
+      if (shareAxis(a,b)) return 'B';
+      return 'D';
+    }
+
     function buildPairLink(code){
       const u = new URL(window.location.href);
       u.search = '';
-      u.searchParams.set('pair', pairKeys[code]);
+      u.searchParams.set('pair', pairTokens[code]);
       return u.toString();
     }
-
-    function getResultUrl(code){
-      const u = new URL(window.location.href);
-      u.search = '';
-      return u.toString();
-    }
-
-    function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines=4){
-      const chars = Array.from(text);
-      let line = '';
-      let lines = [];
-      for (const ch of chars){
-        const test = line + ch;
-        if (ctx.measureText(test).width > maxWidth && line){
-          lines.push(line);
-          line = ch;
-          if (lines.length >= maxLines-1) break;
-        } else line = test;
+    function parsePairCodeFromText(text){
+      if (!text) return null;
+      const trimmed = text.trim();
+      if (!trimmed) return null;
+      try {
+        const u = new URL(trimmed);
+        return tokenToCode[u.searchParams.get('pair')] || null;
+      } catch {
+        return tokenToCode[trimmed] || null;
       }
-      if (line && lines.length < maxLines) lines.push(line);
-      if (lines.length === maxLines && chars.join('').length > lines.join('').length){
-        let last = lines[maxLines-1];
-        while (ctx.measureText(last + '…').width > maxWidth && last) last = last.slice(0,-1);
-        lines[maxLines-1] = last + '…';
-      }
-      lines.forEach((ln,i)=>ctx.fillText(ln,x,y+i*lineHeight));
-      return y + (lines.length-1)*lineHeight;
-    }
-
-    function svgDataUrl(svg){
-      return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
-    }
-
-    function loadImage(src){
-      return new Promise((resolve, reject)=>{ const img=new Image(); img.onload=()=>resolve(img); img.onerror=reject; img.src=src; });
-    }
-
-    function roundRect(ctx, x, y, w, h, r, fill, stroke){
-      ctx.beginPath();
-      ctx.moveTo(x+r, y); ctx.arcTo(x+w, y, x+w, y+h, r); ctx.arcTo(x+w, y+h, x, y+h, r); ctx.arcTo(x, y+h, x, y, r); ctx.arcTo(x, y, x+w, y, r);
-      ctx.closePath();
-      if (fill) ctx.fill();
-      if (stroke) ctx.stroke();
     }
 
     async function copyText(text){
-      try {
-        await navigator.clipboard.writeText(text);
-        return true;
-      } catch (e) {
+      try { await navigator.clipboard.writeText(text); return true; }
+      catch {
         const textarea = document.createElement('textarea');
         textarea.value = text; document.body.appendChild(textarea); textarea.select();
         const ok = document.execCommand('copy'); document.body.removeChild(textarea); return ok;
       }
     }
 
-
-    function getSpoilerByCode(code){
-      const map = {
-        INFJ:{title:"配对剧透",pill:"静音系",lead:"你这类脚的配对感像半夜走路不响的那种默契。朋友一靠近，氛围会先安静下来，再慢慢开始同步。",a:"适合遇到节奏稳、愿意陪你把路走细的人。",b:"相性页里经常会出现一种“原来你也懂”的感觉。"},
-        ENFJ:{title:"配对剧透",pill:"C位系",lead:"你的配对感很像两个人站在一块就自动形成主舞台。朋友测完之后，画面会一下子亮起来。",a:"很容易点亮一段关系的镜头感和故事感。",b:"相性高的时候，会有很强的并肩上场感。"},
-        ENFP:{title:"配对剧透",pill:"水波系",lead:"你的配对感像一脚踩进水里，涟漪一圈圈荡开。朋友一来，互动会先活起来。",a:"适合和会接梗、愿意一起乱跑的人配对。",b:"相性页通常会比较有火花，也很会长出奇怪的小剧情。"},
-        INFP:{title:"配对剧透",pill:"赤脚系",lead:"你的配对感是软的、轻的、贴地的。朋友测完以后，关系会像慢慢落地一样展开。",a:"适合遇到能懂你节奏、也尊重你边界的人。",b:"相性页里会更强调气味、触感和陪伴感。"},
-        INTJ:{title:"配对剧透",pill:"黑魔法系",lead:"你的配对感像法阵合拢。朋友一测完，页面会像被一根暗线牵住。",a:"适合和脑回路完整、站位明确的人同行。",b:"相性页里会很有“我们早就看见彼此了”的味道。"},
-        ENTJ:{title:"配对剧透",pill:"主场系",lead:"你的配对感像两个人在同一块地板上接管现场。朋友来了，整个配对页都会更有主场感。",a:"相性高的时候，站在一起会很像天然成队。",b:"相性页里会出现很强的推进感和掌控感。"},
-        ENTP:{title:"配对剧透",pill:"豆里豆气",lead:"你的配对感像两颗豆子突然开始互相弹射。朋友测完后，故事通常会往很怪但很好玩的方向发展。",a:"适合和会接住你奇怪脑回路的人一起配。",b:"相性页里经常有一种“怎么会这样，但这样也行”的快乐。"},
-        INTP:{title:"配对剧透",pill:"低温系",lead:"你的配对感像冬天玻璃上的雾气，靠近之后才慢慢显影。朋友测完，配对页面会有一种清冷的顺感。",a:"适合和能陪你把思路走到底的人配。",b:"相性页里会出现很细很准的默契感。"},
-        ISTJ:{title:"配对剧透",pill:"标准件",lead:"你的配对感很稳，像尺寸对上的榫卯。朋友测完后，页面会呈现一种整整齐齐的合脚感。",a:"适合和你一样珍惜步幅与秩序的人。",b:"相性页通常会带一点稳定、耐走、越走越顺的气质。"},
-        ESTJ:{title:"配对剧透",pill:"行军系",lead:"你的配对感很像两双靴子一起落地，方向马上就立住了。朋友测完，场面会非常利索。",a:"适合和你一起往前推事情的人配。",b:"相性页里会有一种“开走”的气势。"},
-        ISFJ:{title:"配对剧透",pill:"绒绒系",lead:"你的配对感像两团软绵绵的毛绒碰在一起。朋友测完，整个页面会更柔软，也更有抱抱感。",a:"适合和会珍惜温度、会给回应的人配。",b:"相性页里会更强调陪伴和小小的安心。"},
-        ESFJ:{title:"配对剧透",pill:"花香系",lead:"你的配对感像花香扩散，朋友一测完，整段关系会显得很有光泽。",a:"适合和你一起把气氛养漂亮的人配。",b:"相性页通常会更甜、更热闹，也更会出片。"},
-        ISTP:{title:"配对剧透",pill:"耐磨系",lead:"你的配对感像一层很厚的脚底老茧，看起来不响，实际特别扛用。朋友测完后，画面会显得很结实。",a:"适合和你一起处理现场、一起见招拆招的人配。",b:"相性页里会有很强的实战感。"},
-        ESTP:{title:"配对剧透",pill:"展示系",lead:"你的配对感很有现场张力，朋友一来，配对页会马上变得热闹。",a:"适合和你一起把瞬间过成高光的人配。",b:"相性页里经常会出现冲劲、笑点和很强的镜头感。"},
-        ISFP:{title:"配对剧透",pill:"无脚鸟系",lead:"你的配对感像风吹过地面，没有多余的响动，但会留下很柔软的痕迹。",a:"适合和能跟上你呼吸感的人配。",b:"相性页里会有一种轻飘飘却很贴心的靠近。"},
-        ESFP:{title:"配对剧透",pill:"营业系",lead:"你的配对感很会发光，朋友一测完，整个页面都会像被打了柔焦高光。",a:"适合和你一起出片、一起发亮的人配。",b:"相性页里经常会很美、很甜、很会营业。"}
-      };
-      return map[code] || {title:"配对剧透",pill:"footi",lead:"朋友测完之后，这页会长出你们的相性结果。",a:"不同的脚站在一起，会有不同的镜头感。",b:"你们的故事会在下一页继续。"};
+    function getPairHistory(){
+      try { return JSON.parse(localStorage.getItem(pairHistoryKey) || '[]'); }
+      catch { return []; }
+    }
+    function savePairHistory(items){
+      localStorage.setItem(pairHistoryKey, JSON.stringify(items.slice(0, 60)));
+    }
+    function addPairHistory(a,b,levelKey){
+      const key = [a,b].sort().join('-');
+      const list = getPairHistory().filter(item => item.key !== key);
+      list.unshift({ key, a, b, levelKey, time: Date.now() });
+      savePairHistory(list);
+    }
+    function formatTime(ts){
+      const d = new Date(ts);
+      return `${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    }
+    function getRelevantHistory(selfCode){
+      return getPairHistory().filter(item => item.a === selfCode || item.b === selfCode).slice(0, 10);
     }
 
+    function renderQuestion(){
+      const q = appData.questions[currentIndex];
+      questionNoEl.textContent = `question ${String(currentIndex + 1).padStart(2,'0')}`;
+      questionTextEl.textContent = q.text;
+      progressFill.style.width = `${((currentIndex + 1) / appData.questions.length) * 100}%`;
+      progressChip.textContent = `${String(currentIndex + 1).padStart(2,'0')} / ${String(appData.questions.length).padStart(2,'0')}`;
+      questionMark.innerHTML = renderQuestionMark(q.icon);
+      optionsEl.innerHTML = '';
+      if (q.faceOnly) {
+        optionsEl.className = 'face-grid';
+        q.options.forEach((option, idx) => {
+          const btn = document.createElement('button');
+          btn.className = 'face-option' + (answers[currentIndex] === idx ? ' active' : '');
+          btn.setAttribute('aria-label', option.label);
+          btn.innerHTML = `<div class="face-key">${option.label}</div><div class="face-icon">${renderFace(option.face)}</div>`;
+          btn.addEventListener('click', () => chooseAnswer(idx));
+          optionsEl.appendChild(btn);
+        });
+      } else {
+        optionsEl.className = 'options';
+        q.options.forEach((option, idx) => {
+          const btn = document.createElement('button');
+          btn.className = 'option' + (answers[currentIndex] === idx ? ' active' : '');
+          btn.innerHTML = `<div class="option-key">${option.label}</div><div class="option-text">${option.text}</div>`;
+          btn.addEventListener('click', () => chooseAnswer(idx));
+          optionsEl.appendChild(btn);
+        });
+      }
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.disabled = answers[currentIndex] === null;
+      nextBtn.textContent = currentIndex === appData.questions.length - 1 ? '查看结果' : '下一题';
+    }
+
+    function chooseAnswer(idx){
+      clearTimeout(autoNextTimer);
+      answers[currentIndex] = idx;
+      renderQuestion();
+      autoNextTimer = setTimeout(() => {
+        if (currentIndex < appData.questions.length - 1) {
+          currentIndex += 1;
+          renderQuestion();
+        } else {
+          finalizeTest();
+        }
+      }, 170);
+    }
+
+    function finalizeTest(){
+      const result = computeResult();
+      latestResultCode = result.code;
+      localStorage.setItem(latestResultKey, latestResultCode);
+      setView('result');
+    }
+
+    prevBtn.addEventListener('click', () => {
+      clearTimeout(autoNextTimer);
+      if (currentIndex > 0) { currentIndex -= 1; renderQuestion(); }
+    });
+    nextBtn.addEventListener('click', () => {
+      clearTimeout(autoNextTimer);
+      if (answers[currentIndex] === null) return;
+      if (currentIndex < appData.questions.length - 1) { currentIndex += 1; renderQuestion(); }
+      else finalizeTest();
+    });
 
     function renderResult(){
-      const data = appData.results[latestResultCode];
-      if (!data) return;
-      const pairLink = buildPairLink(latestResultCode);
-      const spoiler = getSpoilerByCode(latestResultCode);
+      if (!latestResultCode || !appData.results[latestResultCode]) {
+        viewEls.result.innerHTML = `<div class="card result-card"><div class="empty-card"><p>先完成测试，这里就会出现你的结果。</p></div></div>`;
+        return;
+      }
+      const selfCode = latestResultCode;
+      const data = appData.results[selfCode];
+      const spoiler = appData.spoilers[selfCode];
+      const pairLink = buildPairLink(selfCode);
+      const compatHtml = renderCompatInline(selfCode, activeFriendCode);
+
       viewEls.result.innerHTML = `
-        <div class="card result-card" id="resultCard">
+        <div class="card result-card">
           <div class="result-head">
             <div>
-              <div class="pill">footi result</div>
+              <div class="pill">footi</div>
               <h2 class="result-name">${data.name}</h2>
               <p class="share-line">${data.share}</p>
             </div>
-            <div class="emblem-wrap">${renderBadge(latestResultCode)}</div>
+            <div class="emblem-wrap">${renderBadge(selfCode)}</div>
           </div>
+
           <p class="desc">${data.description}</p>
           <div class="keywords">${data.keywords.map(k => `<span class="tag">${k}</span>`).join('')}</div>
 
-          <div class="spoiler-box">
-            <div class="spoiler-head">
-              <div class="spoiler-title">${spoiler.title}</div>
-              <div class="spoiler-pill">${spoiler.pill}</div>
+          <div class="section story-card">
+            <strong>配对剧透</strong>
+            <p>${spoiler.lead}</p>
+          </div>
+
+          <div class="section mini-grid">
+            <div class="mini-card">
+              <strong>相遇提示</strong>
+              <p>${spoiler.a}</p>
             </div>
-            <div class="spoiler-copy">${spoiler.lead}</div>
-            <div class="spoiler-mini">
-              <div class="spoiler-mini-card">
-                <div class="spoiler-mini-label">配对气质</div>
-                <div class="spoiler-mini-text">${spoiler.a}</div>
-              </div>
-              <div class="spoiler-mini-card">
-                <div class="spoiler-mini-label">翻页之后</div>
-                <div class="spoiler-mini-text">${spoiler.b}</div>
-              </div>
+            <div class="mini-card">
+              <strong>关系开场</strong>
+              <p>${spoiler.b}</p>
             </div>
           </div>
 
-          <div class="section share-box">
-            <div class="section-title">朋友配对链接</div>
-            <div class="subtle">把这条链接发给朋友。朋友打开后会先做测试，做完就会自动进入你们的相性页。</div>
-            <div class="linkline" id="pairLinkText">${pairLink}</div>
-            <div class="actions">
-              <button class="btn accent" id="copyPairBtn">复制配对链接</button>
-              <button class="btn secondary" id="goCompatBtn">查看相性入口</button>
-              <button class="btn secondary" id="restartBtn">重新测试</button>
+          ${compatHtml}
+
+          <div class="section pair-input">
+            <div class="section-title">输入朋友的配对链接</div>
+            <input id="friendLinkInput" placeholder="把朋友发来的配对链接粘贴到这里" />
+            <div class="pair-actions two" style="margin-top:12px;">
+              <button class="btn primary inline" id="matchBtn">开始配对</button>
+              <button class="btn secondary inline" id="clearMatchBtn">清空本次配对</button>
             </div>
-            <div class="promo-note">${promoLine}</div>
+          </div>
+
+          <div class="section pair-input">
+            <div class="section-title">分享给朋友</div>
+            <div class="pair-linkline" id="pairLinkText">${pairLink}</div>
+            <div class="pair-actions two" style="margin-top:12px;">
+              <button class="btn primary inline" id="copyPairBtn">复制配对链接</button>
+              <button class="btn secondary inline" id="openArchiveBtn">打开配对图鉴</button>
+            </div>
+          </div>
+
+          ${renderHistoryList(selfCode)}
+          <div class="promo-note">${promoLine}</div>
+          <div class="pair-actions" style="margin-top:14px;display:grid;">
+            <button class="btn ghost inline" id="restartBtn">重新测试</button>
           </div>
         </div>
       `;
+
       document.getElementById('copyPairBtn').addEventListener('click', async () => {
         const ok = await copyText(pairLink);
         showToast(ok ? '链接已复制' : '复制失败');
       });
-      document.getElementById('goCompatBtn').addEventListener('click', () => setView('compat'));
+      document.getElementById('openArchiveBtn').addEventListener('click', () => setView('archive'));
       document.getElementById('restartBtn').addEventListener('click', restartTest);
+      document.getElementById('matchBtn').addEventListener('click', () => {
+        const code = parsePairCodeFromText(document.getElementById('friendLinkInput').value);
+        if (!code || !appData.results[code]) { showToast('这个链接暂时识别不到'); return; }
+        activeFriendCode = code;
+        renderResult();
+      });
+      document.getElementById('clearMatchBtn').addEventListener('click', () => {
+        activeFriendCode = incomingPairCode || null;
+        renderResult();
+      });
     }
 
-    function getTemperament(type){
-      return Object.entries(appData.temperamentGroups).find(([, arr]) => arr.includes(type))?.[0] || null;
-    }
-    function shareAxis(a, b){
-      return a[0] === b[0] || a[1] === b[1] || a[2] === b[2] || a[3] === b[3];
-    }
-    function getCompatibilityLevel(a, b){
-      if (a === b) return 'S';
-      if (appData.dominantFunctions[a] === appData.dominantFunctions[b]) return 'S';
-      if (getTemperament(a) === getTemperament(b)) return 'A';
-      if (shareAxis(a, b)) return 'B';
-      return 'D';
-    }
-
-
-    function renderCompat(){
-      if (!latestResultCode || !appData.results[latestResultCode]){
-        viewEls.compat.innerHTML = `<div class="card compat-card"><div class="empty">先完成测试，这里就会出现你的朋友相性。</div></div>`;
-        return;
-      }
-      const selfCode = latestResultCode;
-      const self = appData.results[selfCode];
-      const history = getPairHistory();
-      const historyHtml = history.length ? `
-        <div class="section share-box">
-          <div class="section-title">历史配对</div>
-          <div class="history-list">
-            ${history.map(item => {
-              const a = appData.results[item.selfCode];
-              const b = appData.results[item.friendCode];
-              const lv = appData.compatibility[item.levelKey];
-              return `<div class="history-item"><div class="left"><div class="title">${a.name} × ${b.name}</div><div class="meta">${formatTime(item.time)}</div></div><div class="history-badge">${lv.name}</div></div>`;
-            }).join('')}
-          </div>
-        </div>` : '';
-      if (!(pairCode && validCodes.has(pairCode))){
-        const selfLink = buildPairLink(selfCode);
-        const spoiler = getSpoilerByCode(selfCode);
-        viewEls.compat.innerHTML = `
-          <div class="card compat-card">
-            <div class="compat-head">
-              <div>
-                <div class="pill">footi compatibility</div>
-                <h2 class="compat-name">朋友相性</h2>
-                <p class="share-line">把你的链接发给朋友，等朋友做完测试，这里就会长出你们的配对结果。</p>
-              </div>
-            </div>
-
-            <div class="compat-stage">
-              <div class="compat-stage-head">
-                <div class="compat-ribbon">配对入口</div>
-                <div class="tiny">for your friend</div>
-              </div>
-              <div class="compat-preview">
-                <div class="compat-preview-row">
-                  <div class="emblem-wrap">${renderBadge(selfCode)}</div>
-                  <div class="spark">+</div>
-                  <div class="emblem-wrap">${renderQuestionMark('players')}</div>
-                </div>
-              </div>
-              <div class="compat-story">
-                <p>${spoiler.lead}</p>
-                <p style="margin-top:10px;">把链接发出去之后，朋友会先完成自己的测试，然后自动回到这里。到时候这页会把你们两个的结果放在一起，长出一段专属的配对剧情。</p>
-              </div>
-            </div>
-
-            <div class="compat-link-box">
-              <div class="section-title">你的朋友配对链接</div>
-              <div class="linkline">${selfLink}</div>
-              <div class="mini-actions">
-                <button class="btn accent" id="copySelfPairBtn">复制配对链接</button>
-                <button class="btn secondary" id="backResultBtn">返回结果</button>
-              </div>
-            </div>
-            ${historyHtml}
-            <div class="promo-note">${promoLine}</div>
+    function renderCompatInline(selfCode, friendCode){
+      if (!friendCode || !appData.results[friendCode]) {
+        return `
+          <div class="section empty-card">
+            <div class="section-title" style="margin-bottom:10px;">朋友相性</div>
+            <p>你的结果已经出来了。把朋友的配对链接贴进来，或把你的链接发给朋友，等对方测完以后，这里就会长出你们的相性结果。</p>
           </div>
         `;
-        document.getElementById('copySelfPairBtn').addEventListener('click', async () => {
-          const ok = await copyText(selfLink);
-          showToast(ok ? '链接已复制' : '复制失败');
-        });
-        document.getElementById('backResultBtn').addEventListener('click', () => setView('result'));
-        return;
       }
-      const friendCode = pairCode;
+      const self = appData.results[selfCode];
       const friend = appData.results[friendCode];
       const levelKey = getCompatibilityLevel(selfCode, friendCode);
       const level = appData.compatibility[levelKey];
       addPairHistory(selfCode, friendCode, levelKey);
-      const mergedHistoryHtml = getPairHistory().length ? `
-        <div class="section share-box">
-          <div class="section-title">历史配对</div>
-          <div class="history-list">
-            ${getPairHistory().map(item => {
-              const a = appData.results[item.selfCode];
-              const b = appData.results[item.friendCode];
-              const lv = appData.compatibility[item.levelKey];
-              return `<div class="history-item"><div class="left"><div class="title">${a.name} × ${b.name}</div><div class="meta">${formatTime(item.time)}</div></div><div class="history-badge">${lv.name}</div></div>`;
-            }).join('')}
+      return `
+        <div class="section friend-compat">
+          <div class="compat-band">
+            <div class="level-chip">${level.name}</div>
+            <div class="tiny">朋友相性已解锁</div>
           </div>
-        </div>` : '';
-      viewEls.compat.innerHTML = `
-        <div class="card compat-card">
-          <div class="compat-head">
-            <div>
-              <div class="pill">footi compatibility</div>
-              <h2 class="compat-name">${level.name}</h2>
-              <p class="share-line">${level.tagline}</p>
-            </div>
+          <div class="compat-row">
+            <div class="emblem-wrap">${renderBadge(selfCode)}</div>
+            <div class="spark">×</div>
+            <div class="emblem-wrap">${renderBadge(friendCode)}</div>
           </div>
-
-          <div class="compat-stage">
-            <div class="compat-stage-head">
-              <div class="compat-ribbon">${level.name}</div>
-              <div class="tiny">pair unlocked</div>
-            </div>
-            <div class="compat-preview-row">
-              <div class="emblem-wrap">${renderBadge(selfCode)}</div>
-              <div class="spark">×</div>
-              <div class="emblem-wrap">${renderBadge(friendCode)}</div>
-            </div>
-            <div class="compat-grid">
-              <div class="pair-card"><div class="pair-k">你的脚</div><div class="pair-v">${self.name}</div></div>
-              <div class="pair-card"><div class="pair-k">朋友的脚</div><div class="pair-v">${friend.name}</div></div>
-            </div>
-            <div class="compat-story">
-              <p>${level.description}</p>
-              <p style="margin-top:10px;">${level.note}</p>
-            </div>
+          <div class="stats-grid">
+            <div class="stat-card"><div class="stat-title">你的脚</div><div class="stat-value">${self.name}</div></div>
+            <div class="stat-card"><div class="stat-title">朋友的脚</div><div class="stat-value">${friend.name}</div></div>
           </div>
-
-          <div class="friend-note">${self.name} 和 ${friend.name} 放在同一页时，会把一段普通的路走出自己的镜头感。你们的步幅会在相遇之后慢慢成形，越走越有样子。</div>
-
-          <div class="compat-link-box">
-            <div class="section-title">继续发给朋友</div>
-            <div class="subtle">把这条链接继续发出去，下一位朋友也会从同一个入口开始测试，再回到你的配对页里。</div>
-            <div class="linkline">${buildPairLink(selfCode)}</div>
-            <div class="mini-actions">
-              <button class="btn accent" id="shareSelfBtn">复制我的配对链接</button>
-              <button class="btn secondary" id="backResultBtn">返回结果</button>
-            </div>
+          <div class="story-card">
+            <strong>${level.tagline}</strong>
+            <p>${level.description}</p>
           </div>
-
-          ${mergedHistoryHtml}
-          <div class="promo-note">${promoLine}</div>
+          <div class="mini-card">
+            <strong>相处建议</strong>
+            <p>${level.note}</p>
+          </div>
         </div>
       `;
-      document.getElementById('shareSelfBtn').addEventListener('click', async () => {
+    }
+
+    function renderHistoryList(selfCode){
+      const relevant = getRelevantHistory(selfCode);
+      if (!relevant.length) return '';
+      return `
+        <div class="section">
+          <div class="section-title">最近配对记录</div>
+          <div class="history-list">
+            ${relevant.map(item => {
+              const otherCode = item.a === selfCode ? item.b : item.a;
+              const other = appData.results[otherCode];
+              const level = appData.compatibility[item.levelKey];
+              return `<div class="history-item"><div><div class="history-title">${other.name}</div><div class="history-meta">${formatTime(item.time)}</div></div><div class="history-badge">${level.name}</div></div>`;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderArchive(){
+      if (!latestResultCode || !appData.results[latestResultCode]) {
+        viewEls.archive.innerHTML = `<div class="card archive-card"><div class="empty-card"><p>先完成测试，这里会出现你的配对图鉴。</p></div></div>`;
+        return;
+      }
+      const selfCode = latestResultCode;
+      const self = appData.results[selfCode];
+      const history = getRelevantHistory(selfCode);
+      const unlockedMap = new Map();
+      history.forEach(item => {
+        const other = item.a === selfCode ? item.b : item.a;
+        unlockedMap.set(other, item.levelKey);
+      });
+      viewEls.archive.innerHTML = `
+        <div class="card archive-card">
+          <div class="archive-header">
+            <div>
+              <div class="pill">archive</div>
+              <h2 class="result-name" style="font-size:30px;margin-top:12px;">配对历史图鉴</h2>
+              <p class="share-line">${self.name} 已解锁 ${unlockedMap.size} / ${allCodes.length} 种相遇</p>
+            </div>
+            <div class="emblem-wrap" style="width:96px;height:96px;border-radius:26px;">${renderBadge(selfCode)}</div>
+          </div>
+          <div class="archive-grid">
+            ${allCodes.map(code => renderArchiveCell(selfCode, code, unlockedMap)).join('')}
+          </div>
+          <div class="pair-actions two section">
+            <button class="btn primary inline" id="archiveBackBtn">返回结果</button>
+            <button class="btn secondary inline" id="archiveCopyBtn">复制我的配对链接</button>
+          </div>
+        </div>
+      `;
+      document.getElementById('archiveBackBtn').addEventListener('click', () => setView('result'));
+      document.getElementById('archiveCopyBtn').addEventListener('click', async () => {
         const ok = await copyText(buildPairLink(selfCode));
         showToast(ok ? '链接已复制' : '复制失败');
       });
-      document.getElementById('backResultBtn').addEventListener('click', () => setView('result'));
+    }
+
+    function renderArchiveCell(selfCode, otherCode, unlockedMap){
+      const unlocked = unlockedMap.has(otherCode) || otherCode === selfCode;
+      if (!unlocked) {
+        return `
+          <div class="archive-cell locked">
+            <div class="archive-top">
+              <div>
+                <div class="archive-foot">？？？</div>
+                <div class="archive-meta">等待一次新的相遇</div>
+              </div>
+              <div class="archive-unknown">?</div>
+            </div>
+            <div class="archive-meta">未解锁</div>
+          </div>
+        `;
+      }
+      const other = appData.results[otherCode];
+      const levelKey = otherCode === selfCode ? 'S' : unlockedMap.get(otherCode);
+      const level = appData.compatibility[levelKey];
+      return `
+        <div class="archive-cell">
+          <div class="archive-top">
+            <div>
+              <div class="archive-foot">${other.name}</div>
+              <div class="archive-meta">${level.name}</div>
+            </div>
+            <div class="archive-badge">已解锁</div>
+          </div>
+          <div class="archive-meta">${level.tagline}</div>
+        </div>
+      `;
     }
 
     function restartTest(){
       clearTimeout(autoNextTimer);
       answers = Array(appData.questions.length).fill(null);
       currentIndex = 0;
+      activeFriendCode = incomingPairCode || null;
       setView('test');
       renderQuestion();
     }
@@ -832,24 +852,38 @@
         players:`<svg viewBox="0 0 64 64" fill="none"><circle cx="20" cy="20" r="5" ${common}/><circle cx="32" cy="16" r="5" ${common}/><circle cx="44" cy="20" r="5" ${common}/><path ${common} d="M14 46c2-7 5-11 10-11s8 4 10 11"/><path ${common} d="M24 46c2-7 5-11 8-11s6 4 8 11"/><path ${common} d="M34 46c2-7 5-11 10-11s8 4 10 11"/></svg>`,
         bus:`<svg viewBox="0 0 64 64" fill="none"><rect x="12" y="16" width="40" height="28" rx="8" ${common}/><path ${common} d="M18 24h28"/><path ${common} d="M18 32h12"/><path ${common} d="M38 32h8"/><circle cx="22" cy="47" r="4" ${common}/><circle cx="42" cy="47" r="4" ${common}/></svg>`,
         radio:`<svg viewBox="0 0 64 64" fill="none"><rect x="14" y="18" width="36" height="28" rx="8" ${common}/><path ${common} d="M20 30h10"/><circle cx="40" cy="32" r="5" ${common}/><path ${common} d="M18 14l10 4"/><path ${common} d="M24 50h16"/></svg>`,
+        clock:`<svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="18" ${common}/><path ${common} d="M32 22v12l8 6"/><path ${common} d="M32 10v4"/><path ${common} d="M32 50v4"/></svg>`,
         room:`<svg viewBox="0 0 64 64" fill="none"><path ${common} d="M16 50V18l16-8 16 8v32"/><path ${common} d="M24 50V34h16v16"/><path ${common} d="M20 24h24"/></svg>`,
         diary:`<svg viewBox="0 0 64 64" fill="none"><path ${common} d="M18 14h22c4 0 6 2 6 6v30H24c-4 0-6-2-6-6V14Z"/><path ${common} d="M24 18v32"/><path ${common} d="M30 24h10"/><path ${common} d="M30 32h10"/><path ${common} d="M30 40h8"/></svg>`,
-        ending:`<svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="18" ${common}/><path ${common} d="M32 18v28"/><path ${common} d="M18 32h28"/><path ${common} d="M23 23l18 18"/><path ${common} d="M41 23 23 41"/></svg>`
+        ending:`<svg viewBox="0 0 64 64" fill="none"><path ${common} d="M16 42c8-8 24-8 32 0"/><path ${common} d="M20 30h24"/><path ${common} d="M24 18h16"/><path ${common} d="M32 18v28"/></svg>`,
+        face:`<svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="18" ${common}/><circle cx="25" cy="28" r="2.6" fill="currentColor"/><circle cx="39" cy="28" r="2.6" fill="currentColor"/><path ${common} d="M23 39c3 4 7 6 9 6s6-2 9-6"/></svg>`
       };
       return maps[kind] || maps.mist;
     }
 
+    function renderFace(kind){
+      const s = 'stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"';
+      const map = {
+        laugh:`<svg viewBox="0 0 120 120" fill="none"><circle cx="60" cy="60" r="42" ${s}/><path ${s} d="M38 46c4 6 10 9 16 9s12-3 16-9"/><path ${s} d="M50 72c6 8 12 12 22 12s16-4 22-12"/><circle cx="44" cy="48" r="3" fill="currentColor"/><circle cx="76" cy="48" r="3" fill="currentColor"/></svg>`,
+        angry:`<svg viewBox="0 0 120 120" fill="none"><circle cx="60" cy="60" r="42" ${s}/><path ${s} d="M36 50l14-6"/><path ${s} d="M84 50 70 44"/><circle cx="48" cy="58" r="3" fill="currentColor"/><circle cx="72" cy="58" r="3" fill="currentColor"/><path ${s} d="M44 82c6-5 12-7 16-7s10 2 16 7"/></svg>`,
+        cry:`<svg viewBox="0 0 120 120" fill="none"><circle cx="60" cy="60" r="42" ${s}/><circle cx="48" cy="52" r="3" fill="currentColor"/><circle cx="72" cy="52" r="3" fill="currentColor"/><path ${s} d="M42 82c7-7 13-10 18-10s11 3 18 10"/><path ${s} d="M44 58c-3 7-3 13 0 18"/><path ${s} d="M76 58c3 7 3 13 0 18"/></svg>`,
+        calm:`<svg viewBox="0 0 120 120" fill="none"><circle cx="60" cy="60" r="42" ${s}/><path ${s} d="M42 50h12"/><path ${s} d="M66 50h12"/><path ${s} d="M44 80h32"/></svg>`
+      };
+      return map[kind] || map.calm;
+    }
+
     function badgeFrame(inner){
       return `<svg viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="10" y="10" width="120" height="120" rx="34" fill="rgba(255,255,255,.76)"/>
-        <circle cx="70" cy="70" r="44" fill="rgba(129,95,61,.08)"/>
+        <rect x="10" y="10" width="120" height="120" rx="34" fill="rgba(255,255,255,.05)"/>
+        <circle cx="70" cy="70" r="44" fill="rgba(119,169,255,.10)"/>
+        <circle cx="70" cy="70" r="49" stroke="rgba(119,169,255,.24)"/>
         ${inner}
       </svg>`;
     }
 
     function renderBadge(code){
-      const s = 'stroke="#6d5337" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"';
-      const c = '#6d5337';
+      const s = 'stroke="#f5f9ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"';
+      const c = '#9dc2ff';
       const badges = {
         INFJ: badgeFrame(`<path ${s} d="M70 34c4 11 11 18 22 22-11 4-18 11-22 22-4-11-11-18-22-22 11-4 18-11 22-22Z"/><path ${s} d="M51 86c8-3 14-8 19-15 5 7 11 12 19 15"/><path ${s} d="M60 99h20"/>`),
         ENFJ: badgeFrame(`<circle cx="70" cy="46" r="10" ${s}/><path ${s} d="M48 90c6-17 14-25 22-25s16 8 22 25"/><path ${s} d="M44 52c8 0 12-4 16-12 4 8 8 12 16 12 8 0 12-4 16-12"/>`),
@@ -861,7 +895,7 @@
         INTP: badgeFrame(`<path ${s} d="M70 34v16"/><path ${s} d="M70 90v16"/><path ${s} d="M34 70h16"/><path ${s} d="M90 70h16"/><path ${s} d="M46 46l11 11"/><path ${s} d="M83 83 94 94"/><path ${s} d="M94 46 83 57"/><path ${s} d="M46 94 57 83"/><circle cx="70" cy="70" r="12" ${s}/>`),
         ISTJ: badgeFrame(`<rect x="44" y="44" width="52" height="52" rx="14" ${s}/><path ${s} d="M70 44v52"/><path ${s} d="M44 70h52"/><circle cx="57" cy="57" r="2.5" fill="${c}"/><circle cx="83" cy="57" r="2.5" fill="${c}"/><circle cx="57" cy="83" r="2.5" fill="${c}"/><circle cx="83" cy="83" r="2.5" fill="${c}"/>`),
         ESTJ: badgeFrame(`<path ${s} d="M48 42h44v18H48z"/><path ${s} d="M54 60h32v18H54z"/><path ${s} d="M60 78h20v18H60z"/><path ${s} d="M48 42 40 50"/><path ${s} d="M92 42 100 50"/>`),
-        ISFJ: badgeFrame(`<circle cx="55" cy="55" r="12" ${s}/><circle cx="85" cy="55" r="12" ${s}/><circle cx="55" cy="85" r="12" ${s}/><circle cx="85" cy="85" r="12" ${s}/><circle cx="70" cy="70" r="10" fill="rgba(129,95,61,.16)"/>`),
+        ISFJ: badgeFrame(`<circle cx="55" cy="55" r="12" ${s}/><circle cx="85" cy="55" r="12" ${s}/><circle cx="55" cy="85" r="12" ${s}/><circle cx="85" cy="85" r="12" ${s}/><circle cx="70" cy="70" r="10" fill="rgba(119,169,255,.24)"/>`),
         ESFJ: badgeFrame(`<circle cx="70" cy="70" r="10" ${s}/><path ${s} d="M70 38c4 12 10 18 22 22-12 4-18 10-22 22-4-12-10-18-22-22 12-4 18-10 22-22Z"/><circle cx="70" cy="70" r="4" fill="${c}"/>`),
         ISTP: badgeFrame(`<path ${s} d="M70 34 92 44v20c0 16-10 26-22 34-12-8-22-18-22-34V44l22-10Z"/><path ${s} d="M59 68h22"/><path ${s} d="M63 56h14"/>`),
         ESTP: badgeFrame(`<path ${s} d="M46 92c0-18 10-30 24-30 14 0 24 12 24 30"/><path ${s} d="M50 90h44"/><path ${s} d="M70 34v26"/><path ${s} d="M60 54h20"/><circle cx="70" cy="46" r="4" fill="${c}"/>`),
